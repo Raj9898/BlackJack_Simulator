@@ -1,11 +1,1 @@
-The entire program runs across two main scripts:
-  Blackjack_Lib_Sim which supplies the necessary infrastructure and back-end functionality for Blackjack_Script_Sim 
-  Blackjack_Script_Sim stores the Blackjack Game object as well as the Player Strategies object
 
-After a simulation (hand) is played, the P&L is calculated and stored in a list, which is then used to generate plots on a graph
-Each plot on the graph represents the overall performance of a Player (strategy) over the course of multiple hands. 
-
-The Blackjack Game I have created ignores the fact that "A" can count toward both value 1 and value 11
-I wanted to make the simulations easier to calculate and not deal with over complexity, so I opted for the simplicity of value 11 only
-
-Hope you find this interesting! 
