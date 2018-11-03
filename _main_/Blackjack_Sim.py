@@ -1,16 +1,23 @@
+##################################################
+
 """
-Blackjack Game
-@Rajesh
-12/11/2017
+==========================================
+Author: Rajesh Rao
+Licensed for public use
+All Rights Reserved
+==========================================
 """
 
-'''
-IMPORT MODULES
-'''
+
+#############################################
+# Import Libraries and modules
+#############################################
+
 import random as r
 import numpy as n
 import matplotlib.pyplot as plt
-import Blackjack_Lib_Sim as bjk
+import Blackjack_Lib as bjk
+
 
 '''
 MAIN GAME SEQUENCE
@@ -26,15 +33,12 @@ MAIN GAME SEQUENCE
 
 class Game:
     # initializes the game with deck, player(s), dealer's hand, bet and initial funds
-    def __init__(self, bet, funds, hit_stop=15, side_bet=0, double_stop=0, split=False, insurance=False, double=False,
-                 lev=False):
-        if lev == False:
+    def __init__(self, bet: float, funds: float, hit_stop: int=15, side_bet: float=0.0, double_stop: int=0,
+                 split: bool =False, insurance: bool =False, double: bool =False, lev: bool =False):
+        if lev is False:
             assert bet < funds, "The value of your bet exceeds your total funds"
         else:
             pass
-        assert type(split) == bool and type(insurance) == bool and type(double) == bool
-        assert type(side_bet) == int or type(side_bet) == float
-        assert type(hit_stop) == int
 
         self.deck = bjk.gen_deck()
         self.bet = bet
