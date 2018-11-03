@@ -4,8 +4,8 @@ The library focuses on simulating game(s) of Blackjack across different Player o
 Script dependencies include Python 3.6 as well as  the random library, numpy and matplotlib'
 
 The entire library runs across three main scripts:
-1. Blackjack_Lib which supplies the necessary infrastructure and back-end functionality for Blackjack_Script_Sim 
-2. Blackjack_Strat stores a system of rules to 
-3. Blackjack_Sim stores the Blackjack Game strucutre to simulate games according to strategies
+1. blackjack_lib which supplies the necessary infrastructure and back-end functionality for Blackjack_Script_Sim 
+2. blackjack_strats stores a system of rules to execute gambling strategies
+3. blackjack_game stores the Blackjack Game strucutre to simulate games according to strategies
 
 After a simulation (hand) is played, P&L is calculated and stored to generate plots for visual transperancy. Each plot on the graph represents the overall performance of a Player (strategy) over the course of multiple hands. 
