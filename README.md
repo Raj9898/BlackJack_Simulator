@@ -9,3 +9,14 @@ The entire library runs across three main scripts:
 3. blackjack_game stores the Blackjack Game strucutre to simulate games according to strategies
 
 After a simulation (hand) is played, P&L is calculated and stored to generate plots for visual transperancy. Each plot on the graph represents the overall performance of a Player (strategy) over the course of multiple hands. 
+
+## Basic Strategy
+Below is a basic chart created for tables using the most common house rules, borrowed from [casinoreviewsquad.com], The follwoing tables illustrates percieved optimal play. 
+
+!['SimpleStrategy'](https://github.com/Raj9898/BlackJack_Simulator/blob/master/_strats_/blackjackstrategyimg.png) 
+- S = Stand
+- H = Hit
+- Dh = Double when possible, hit otherwise
+- Ds = Double when possible, stand otherwise
+- SP = Split
+- SU = Surrender when possible, hit otherwise
