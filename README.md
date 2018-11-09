@@ -13,10 +13,4 @@ After a simulation (hand) is played, P&L is calculated and stored to generate pl
 ## Basic Strategy Implementation 
 Below is a basic chart created for tables using the most common house rules, borrowed from [casinoreviewsquad.com], The follwoing tables illustrates percieved optimal play. 
 
-!['SimpleStrategy'](https://github.com/Raj9898/BlackJack_Simulator/blob/master/_strats_/blackjackstrategyimg.png) 
-- S = Stand
-- H = Hit
-- Dh = Double when possible, hit otherwise
-- Ds = Double when possible, stand otherwise
-- SP = Split
-- SU = Surrender when possible, hit otherwise
+!['SimpleStrategy'](https://github.com/Raj9898/BlackJack_Simulator/blob/master/_strats_/Blackjack-Basic-Strategy-Chart.jpg) 
