@@ -1,7 +1,7 @@
 # BlackJack Simulator & Strategy Profile
-The library focuses on simulating game(s) of Blackjack across different Player objects, each with defined strategies played over numerous hands to demonstrate the long-term impact on P&L as well as win/loss %
+This project focuses on simulating game(s) of Blackjack across different Player objects, each with defined strategies played over numerous hands to demonstrate the long-term impact on P&L as well as win/loss %
 
-The entire library runs across three main scripts:
+The entire project runs across three main scripts:
 1. blackjack_lib which supplies the necessary infrastructure and back-end functionality for Blackjack_Script_Sim 
 2. blackjack_strats stores a system of rules to execute gambling strategies
 3. blackjack_game stores the Blackjack Game structure to simulate games according to strategies
