@@ -1,12 +1,10 @@
 # BlackJack Simulator & Strategy Profile
-This project focuses on simulating game(s) of Blackjack across different Player objects, each with defined strategies played over numerous hands to demonstrate the long-term impact on P&L as well as win/loss %
+This project focuses on simulating game(s) of Blackjack across different Player objects, each with defined strategy profiles over numerous hands to demonstrate the long-term impact on P&L and win/loss percentage, with the intent of developing more effecient betting strategies and optimal play approaches to the game. 
 
 The entire project runs across three main scripts:
 1. blackjack_lib.py which supplies the necessary infrastructure and back-end functionality for blackjack_game.py 
 2. blackjack_strats.py stores a system of rules to execute gambling strategies
 3. blackjack_game.py stores the Blackjack Game structure to simulate games according to strategies
-
-After a simulation (hand) is played, P&L is calculated and stored in a dataframe to generate plots for visual transparency and perform statistical analysis. Each plot on the graph represents the overall performance of a Player (strategy) over the course of multiple hands. 
 
 ## Basic Rules of Blackjack
 These are the general rule of Blackjack as played across most real/virtual casinos throughout the world. <br/>
