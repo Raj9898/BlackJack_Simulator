@@ -16,16 +16,15 @@ import random
 
 
 # generates a shoe (collection of cards) with 4 identically decks for the user, where suits don't matter
-def gen_deck():
+def gen_deck(deck_num: int=4):
     deck = []
-    num_of_decks = 4
 
     ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
     for suit in range(0, 4):
         for rank in ranks:
             deck.append('{}'.format(rank))
-    big_deck = deck * num_of_decks
+    big_deck = deck * deck_num
     random.shuffle(big_deck)
     return big_deck
 
