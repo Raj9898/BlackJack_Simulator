@@ -4,9 +4,9 @@ The library focuses on simulating game(s) of Blackjack across different Player o
 The entire library runs across three main scripts:
 1. blackjack_lib which supplies the necessary infrastructure and back-end functionality for Blackjack_Script_Sim 
 2. blackjack_strats stores a system of rules to execute gambling strategies
-3. blackjack_game stores the Blackjack Game strucutre to simulate games according to strategies
+3. blackjack_game stores the Blackjack Game structure to simulate games according to strategies
 
-After a simulation (hand) is played, P&L is calculated and stored to generate plots for visual transperancy. Each plot on the graph represents the overall performance of a Player (strategy) over the course of multiple hands. 
+After a simulation (hand) is played, P&L is calculated and stored to generate plots for visual transparency. Each plot on the graph represents the overall performance of a Player (strategy) over the course of multiple hands. 
 
 ## Basic Rules of Blackjack
 These are the general rule of Blackjack as played across most real/virtual casinos throughout the world. <br/>
@@ -29,5 +29,6 @@ These are the general rule of Blackjack as played across most real/virtual casin
 12. Winning wagers pay even money, except a winning player blackjack usually pays 3 to 2. 
 
 ## Basic Strategy for Implementation
-Below is a basic strategy chart for players at casino-tables operating under the most common house rules. The following color codes idenitfy play strategis percieved to be optimal play and are widley cosnidered standard for new players looking to gain a compeitive edge at the table. I will be referencing this table heavily when crafting strategies and allocating bet sizes.  <br/>
+Below is a basic strategy chart for players at casino-tables operating under the most common house rules. The following color codes identify play strategies perceived to be optimal play and are widely considered standard for new players looking to gain a competitive edge at the table. I will be referencing this table heavily when crafting strategies and allocating bet sizes.  <br/>
 !['SimpleStrategy'](https://github.com/Raj9898/BlackJack_Simulator/blob/master/_strats_/Blackjack-Basic-Strategy-Chart.png) <br/> 
+
