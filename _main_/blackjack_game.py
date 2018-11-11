@@ -13,27 +13,14 @@ All Rights Reserved
 # Import Libraries and modules
 #############################################
 
-import random as r
-import numpy as n
-import blackjack_Lib as Bjk
-
-
-'''
-MAIN GAME SEQUENCE
-# defines the game structure and outline for blackjack with basic rules
-# 2-10 are face value,J, Q, K are 10 equivalents and A is 11 or 1
-# player has the option to hit, stand, double, split or take insurance
-# hit draws another card and appends to players existing hand
-# stand, lets the player stick with his hand and does not draw
-# double doubles the players bet and then draws them one and only one card
-# split, separates the players hand and allows them to play each hand separately
-# insurance, takes out a side-bet in the event the dealer shows an A 
-'''
+import numpy
+import pandas as pd
+import blackjack_lib as bjk
 
 
 class Game:
     """
-    initializes the game with predefined arguments regarding game structure
+    Initializes the game with predefined arguments regarding game structure
         bet:        determines the size of initial and subsequent bets (type integer)
         funds:      determines starting funds for the game (type integer)
         side_bet:   determines the size of side_bet in the event of insurance (type integer)
@@ -47,9 +34,8 @@ class Game:
                  insurance: bool =False, double: bool =True, leverage: bool =False):
         assert bet < funds, "The value of your bet exceeds your total funds"
 
-        self.deck = bjk.gen_deck(ddeck_num=eck_num)
-        self.dealer = []
-        self.hand = []
+        self.deck = bjk.gen_deck(deck_num=deck_num)
+        self.reshuffle = len(self.deck)/4
 
         self.bet = bet
         self.funds = funds
@@ -59,83 +45,65 @@ class Game:
         self.side_bet = side_bet
         self.lev = leverage
 
-        self.win = 0
-        self.loss = 0
+        numpy.random.shuffle(self.deck)
 
-    # deals a hand of 2 cards to the player and dealer by popping the last unit of the shuffled list
-    def deal_cards(self):
-        for x in range(0, 2):
-            # dealer is dealt first 2 cards
-            deals = self.deck.pop()
-            self.dealer.append(deals)
-            # player is now dealt 2 cards
-            deal = self.deck.pop()
-            self.hand.append(deal)
-        return self.hand
-
-    # hit for another card to be drawn by the user
-    def hit(self):
-        # new card is added to your hand
-        new_card = self.deck.pop()
-        self.hand.append(new_card)
-        return self.hand
-
-    # hit within the split function
-    def split_hit(self, some_list: list):
-        # new card is added to your hand
+    def hit(self, some_list: list):
+        """
+        Hit functionality for another card to be drawn for the user
+        :param some_list: referencing the player/dealer hands
+        :return: a new list with an additional card added
+        """
         new_card = self.deck.pop()
         some_list.append(new_card)
         return some_list
 
-    # executes the continued draw function of the dealer
-    def draw(self):
-        # the dealer draws a card
-        new_card = self.deck.pop()
-        self.dealer.append(new_card)
-        return self.dealer
+    def split(self):
+        return 0
 
-    # defines the blackjack sequence or game structure
+    def double(self):
+        return 0
+
+    def stand(self):
+        return 0
+
     def blackjack(self):
+        """
+        simulates a game of blackjack as per specification imputed by user
+        return: available funds after successful completion of hand
+        """
+
+        dealers_hand = []
+        players_hand = []
 
         if self.funds > 0:
-            # shuffles the deck for the game using random library from numpy
-            n.random.shuffle(self.deck)
-                
-            player_hand = self.deal_cards()
 
-            for i in player_hand:
-                self.deck.append(i)
-            for y in self.dealer:
-                self.deck.append(y)
+            # deals a hand of 2 cards to the player and dealer by popping the last unit of the shuffled list
+            for x in range(0, 2):
+                dealer_card = self.deck.pop()
+                dealers_hand.append(dealer_card)
 
-            # iterates over the hand to extrapolate the important numeric/value
-            p_list = bjk.int_card(player_hand)
-            d_list = bjk.int_card(self.dealer)
+                player_card = self.deck.pop()
+                dealers_hand.append(player_card)
 
-            # allows you to take out insurance if the dealer is showing an Ace
-            if self.insurance == True:
-                side_bet = bjk.insurance(d_list, self.funds, self.side_bet)
+            # insurance mechanic if the dealer presents an Ace
+            if self.insurance:
+                side_bet = bjk.insurance(dealers_hand, self.funds, self.side_bet)
             else:
                 side_bet = 0
 
-            # returns the sum of participants and the dealers hand to be compared
-            d_sum = bjk.sum_hand(d_list)
-            p_sum = bjk.sum_hand(p_list)
+            # returns the sum of player's and the dealer's respective hand value
+            d_sum = bjk.sum_hand(dealers_hand)
+            p_sum = bjk.sum_hand(players_hand)
 
             # checks to see if dealer has a natural 21 on the first draw/deal
             if d_sum == 21 and p_sum < 21:
                 self.funds -= self.bet
-                # while you may lose your initial bet you receive your side bet in compensation
                 self.funds += (self.side_bet * 2)
 
             # checks to see if their is a tie of natural 21 signaling a push
-            elif d_sum == 21 & p_sum == 21 | d_sum > 21 & p_sum > 21:
+            elif d_sum == 21 & p_sum == 21:
                 pass
 
-            elif d_sum > 21 & p_sum < 21:
-                self.funds += self.bet
-
-            # if above mentioned cases don't pass you are now allowed to either hit, stand, double or split
             else:
                 # if the dealer does not hit a natural 21 you lose your side bet (insurance)
                 self.funds -= self.side_bet
@@ -144,20 +112,21 @@ class Game:
                 if p_sum == 21:
                     self.funds += ((self.bet / 2) * 3)
 
-                # if you receive a double Ace
-                elif p_sum > 21:
-                    self.funds -= self.bet
-
                 # if you do not receive a natural 21 then you are asked to hit, stand, double or split
                 else:
                     # split functionality that checks the values in player hand are identical
-                    splitting = bjk.split(p_list, player_hand)
+                    splitting = bjk.split(players_hand)
+
+                    """
+                    CONTINUE POINT
+                    """
+
 
                     # if you do not want to split this sequence is executed   
-                    if self.split == False:
+                    if not self.split:
 
-                        # asks you if you would like to double your bet and receive one and only one additional card
-                        new_bet = bjk.double(self.bet, self.funds, self.lev)
+                        # asks you if you would like to double your bet
+                        new_bet = bjk.double(self.bet, self.funds)
 
                         # if you do want to double, this sequence is executed
                         if self.double == True and p_sum == self.double_stop:
@@ -253,35 +222,14 @@ class Game:
                                 winner = bjk.find_winner(p_sum, d_sum)
                                 self.funds = bjk.bet_check(winner, self.funds, self.bet)
 
-        # empties both the player's and dealer's hand to then play again
-        self.dealer = []
-        self.hand = []
-
         return self.funds
 
 
-
-
-'''
-PROGRAM RUNNING SCRIPT
-# executes the program and allows for object manipulation 
-# initializes the game object
-'''
 if __name__ == "__main__":
     
-    num_hand = 100
-    num_players = 100
-    initial_bet = 100
-    total_fund = 1000
+    test = Game(bet=100, funds=10000)
+    print(test.deck)
     
     
-    for i in range(0, num_players):
-        p1 = Player1(initial_bet, total_fund, False)
-        p2 = Player2(initial_bet, total_fund, False)
-        p3 = Player3(initial_bet, total_fund, False)
-        
-        p1.simulations(num_hand)
-        p2.simulations(num_hand, initial_bet)
-        p3.simulations(num_hand)
-        
+
 

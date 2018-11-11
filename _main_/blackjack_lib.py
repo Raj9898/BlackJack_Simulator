@@ -16,7 +16,7 @@ import random
 
 
 # generates a shoe (collection of cards) with 4 identically decks for the user, where suits don't matter
-def gen_deck(deck_num: int=4):
+def gen_deck(deck_num: int):
     deck = []
 
     ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
@@ -30,7 +30,7 @@ def gen_deck(deck_num: int=4):
 
 
 # Returns the sum of each hand as specified
-def sum_hand(card_values):
+def sum_hand(card_values: list):
     card_sum = 0
 
     for card in card_values:
@@ -54,7 +54,7 @@ def d_sev(draw_func):
 
 
 # declares blackjack per initial draw by the user (first serve)          
-def win_check(sum_total):
+def win_check(sum_total: int):
     if sum_total == 21:
         return 2
     elif sum_total > 21:
@@ -62,7 +62,7 @@ def win_check(sum_total):
 
 
 # runs through the available hand sums to find the winner (1) you win, (-1) dealer wins (0) draw between dealer
-def find_winner(player_sum, dealer_sum):
+def find_winner(player_sum: int, dealer_sum: int):
     if dealer_sum < player_sum <= 21:
         return 1
     elif player_sum < dealer_sum <= 21:
@@ -78,7 +78,7 @@ def find_winner(player_sum, dealer_sum):
 
 
 # check to see whether to add or subtract value of bet from the funds
-def bet_check(value, funds, bet):
+def bet_check(value: int, funds: int, bet: int):
     if value == 1:
         funds += bet
         return funds
@@ -91,7 +91,7 @@ def bet_check(value, funds, bet):
 
 
 # double bets and returns either 0 or doubles your initial bet, leverage and available funds
-def double(bet, funds):
+def double(bet:int, funds: int):
     doubler = bet * 2
 
     if doubler <= funds:
@@ -101,7 +101,7 @@ def double(bet, funds):
 
 
 # split your cards allows you to play separate hands each
-def split(card_list):
+def split(card_list: list):
     empty = []
     if card_list[0] == card_list[1]:
         empty.append([x])
@@ -109,9 +109,8 @@ def split(card_list):
 
 
 # take out insurance in the event the dealer is showing a high card
-def insurance(some_list, funds, insurance_bet):
-    show_card = some_list[0]
+def insurance(dealer_list: list, funds: int, insurance_bet: int):
+    show_card = dealer_list[0]
     if show_card == 'A':
         if insurance_bet < funds:
-            side_bet = insurance_bet
-            return side_bet
+            return insurance_bet
