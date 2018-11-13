@@ -57,11 +57,13 @@ class Game:
         some_list.append(new_card)
         return some_list
 
-    def split(self):
-        return 0
+    def split(self, players_hand: list):
+        splitting = bjk.split(players_hand)
+        return splitting
 
-    def double(self):
-        return 0
+    def double(self, bet: int, funds: int):
+        bet_amt = bjk.double(bet, funds)
+        return bet_amt
 
     def stand(self):
         return 0
@@ -83,13 +85,13 @@ class Game:
                 dealers_hand.append(dealer_card)
 
                 player_card = self.deck.pop()
-                dealers_hand.append(player_card)
+                players_hand.append(player_card)
 
             # insurance mechanic if the dealer presents an Ace
             if self.insurance:
-                side_bet = bjk.insurance(dealers_hand, self.funds, self.side_bet)
+                self.side_bet = bjk.insurance(dealers_hand, self.funds, self.side_bet)
             else:
-                side_bet = 0
+                self.side_bet = 0
 
             # returns the sum of player's and the dealer's respective hand value
             d_sum = bjk.sum_hand(dealers_hand)
@@ -114,113 +116,114 @@ class Game:
 
                 # if you do not receive a natural 21 then you are asked to hit, stand, double or split
                 else:
-                    # split functionality that checks the values in player hand are identical
-                    splitting = bjk.split(players_hand)
+                    strategy_df = pd.read_csv('blackjack_basic_strategy.csv')
+                    player_ref = ','.join(players_hand)
+                    hole_card = dealers_hand.pop()
 
-                    """
-                    CONTINUE POINT
-                    """
-
-
-                    # if you do not want to split this sequence is executed   
-                    if not self.split:
-
-                        # asks you if you would like to double your bet
-                        new_bet = bjk.double(self.bet, self.funds)
-
-                        # if you do want to double, this sequence is executed
-                        if self.double == True and p_sum == self.double_stop:
-                            # the bet is now doubled accordingly
-                            self.bet = new_bet
-
-                            # your are now dealt one additional card
-                            news = self.hit()
-                            new_score = (bjk.sum_hand(bjk.int_card(news)))
-
-                            # makes the dealer draw cards until he reaches a sum >= 17
-                            while d_sum < 17:
-                                d_sum = bjk.d_sev(self.draw())
-                                if d_sum > 16:
-                                    break
-
-                            # checks to find the winner given the available hands
-                            winner = bjk.find_winner(new_score, d_sum)
-
-                            self.funds = bjk.bet_check(winner, self.funds, self.bet)
-                            self.bet = new_bet / 2
-
-                        # if you do not want to double this sequence is executed
-                        elif self.double == False or self.double == True:
-
-                            # if you elect to hit this sequence is executed
-                            while p_sum < self.hit_stop:
-                                news = self.hit()
-                                new_score = (bjk.sum_hand(bjk.int_card(news)))
-                                p_sum = new_score
-
-                            # makes the dealer draw cards until he reaches a sum >= 17
-                            while d_sum < 17:
-                                d_sum = bjk.d_sev(self.draw())
-                                if d_sum > 16:
-                                    break
-
-                            # checks to find the winner of the available hands
-                            winner = bjk.find_winner(p_sum, d_sum)
-                            self.funds = bjk.bet_check(winner, self.funds, self.bet)
+                    # strategy_df['Players Hand']
 
 
-                    elif self.split == True and splitting != 0:
 
-                        self.funds -= side_bet
 
-                        # in the event you split you play each hand independently 
-                        for x in range(0, len(splitting)):
-
-                            # iterates over each hand and executes each hand accordingly
-                            split_hand = splitting[x]
-
-                            # asks you if you would like to double your bet and receive one and only one additional card
-                            new_bet = bjk.double(self.bet, self.funds, self.lev)
-
-                            # if you do want to double, this sequence is executed
-                            if self.double == True and p_sum == self.double_stop:
-                                # the bet is now doubled accordingly
-                                self.bet = new_bet
-
-                                # your are now dealt one additional card
-                                news = self.split_hit(split_hand)
-                                new_score = (bjk.sum_hand(bjk.int_card(news)))
-
-                                # makes the dealer draw cards until he reaches a sum >= 17
-                                while d_sum < 17:
-                                    d_sum = bjk.d_sev(self.draw())
-                                    if d_sum > 16:
-                                        break
-
-                                # checks to find the winner given the available hands
-                                winner = bjk.find_winner(new_score, d_sum)
-
-                                self.funds = bjk.bet_check(winner, self.funds, self.bet)
-                                self.bet = new_bet / 2
-
-                            # if you do not want to double this sequence is executed
-                            elif self.double == False or self.double == True:
-
-                                # if you elect to hit this sequence is executed
-                                while p_sum < self.hit_stop:
-                                    news = self.split_hit(split_hand)
-                                    new_score = (bjk.sum_hand(bjk.int_card(news)))
-                                    p_sum = new_score
-
-                                # makes the dealer draw cards until he reaches a sum >= 17
-                                while d_sum < 17:
-                                    d_sum = bjk.d_sev(self.draw())
-                                    if d_sum > 16:
-                                        break
-
-                                # checks to find the winner of the available hands
-                                winner = bjk.find_winner(p_sum, d_sum)
-                                self.funds = bjk.bet_check(winner, self.funds, self.bet)
+                    # # if you do not want to split this sequence is executed
+                    # if not self.split:
+                    #
+                    #     # asks you if you would like to double your bet
+                    #     new_bet = bjk.double(self.bet, self.funds)
+                    #
+                    #     # if you do want to double, this sequence is executed
+                    #     if self.double == True and p_sum == self.double_stop:
+                    #         # the bet is now doubled accordingly
+                    #         self.bet = new_bet
+                    #
+                    #         # your are now dealt one additional card
+                    #         news = self.hit()
+                    #         new_score = (bjk.sum_hand(bjk.int_card(news)))
+                    #
+                    #         # makes the dealer draw cards until he reaches a sum >= 17
+                    #         while d_sum < 17:
+                    #             d_sum = bjk.d_sev(self.draw())
+                    #             if d_sum > 16:
+                    #                 break
+                    #
+                    #         # checks to find the winner given the available hands
+                    #         winner = bjk.find_winner(new_score, d_sum)
+                    #
+                    #         self.funds = bjk.bet_check(winner, self.funds, self.bet)
+                    #         self.bet = new_bet / 2
+                    #
+                    #     # if you do not want to double this sequence is executed
+                    #     elif self.double == False or self.double == True:
+                    #
+                    #         # if you elect to hit this sequence is executed
+                    #         while p_sum < self.hit_stop:
+                    #             news = self.hit()
+                    #             new_score = (bjk.sum_hand(bjk.int_card(news)))
+                    #             p_sum = new_score
+                    #
+                    #         # makes the dealer draw cards until he reaches a sum >= 17
+                    #         while d_sum < 17:
+                    #             d_sum = bjk.d_sev(self.draw())
+                    #             if d_sum > 16:
+                    #                 break
+                    #
+                    #         # checks to find the winner of the available hands
+                    #         winner = bjk.find_winner(p_sum, d_sum)
+                    #         self.funds = bjk.bet_check(winner, self.funds, self.bet)
+                    #
+                    #
+                    # elif self.split == True and splitting != 0:
+                    #
+                    #     self.funds -= side_bet
+                    #
+                    #     # in the event you split you play each hand independently
+                    #     for x in range(0, len(splitting)):
+                    #
+                    #         # iterates over each hand and executes each hand accordingly
+                    #         split_hand = splitting[x]
+                    #
+                    #         # asks you if you would like to double your bet and receive one and only one additional card
+                    #         new_bet = bjk.double(self.bet, self.funds, self.lev)
+                    #
+                    #         # if you do want to double, this sequence is executed
+                    #         if self.double == True and p_sum == self.double_stop:
+                    #             # the bet is now doubled accordingly
+                    #             self.bet = new_bet
+                    #
+                    #             # your are now dealt one additional card
+                    #             news = self.split_hit(split_hand)
+                    #             new_score = (bjk.sum_hand(bjk.int_card(news)))
+                    #
+                    #             # makes the dealer draw cards until he reaches a sum >= 17
+                    #             while d_sum < 17:
+                    #                 d_sum = bjk.d_sev(self.draw())
+                    #                 if d_sum > 16:
+                    #                     break
+                    #
+                    #             # checks to find the winner given the available hands
+                    #             winner = bjk.find_winner(new_score, d_sum)
+                    #
+                    #             self.funds = bjk.bet_check(winner, self.funds, self.bet)
+                    #             self.bet = new_bet / 2
+                    #
+                    #         # if you do not want to double this sequence is executed
+                    #         elif self.double == False or self.double == True:
+                    #
+                    #             # if you elect to hit this sequence is executed
+                    #             while p_sum < self.hit_stop:
+                    #                 news = self.split_hit(split_hand)
+                    #                 new_score = (bjk.sum_hand(bjk.int_card(news)))
+                    #                 p_sum = new_score
+                    #
+                    #             # makes the dealer draw cards until he reaches a sum >= 17
+                    #             while d_sum < 17:
+                    #                 d_sum = bjk.d_sev(self.draw())
+                    #                 if d_sum > 16:
+                    #                     break
+                    #
+                    #             # checks to find the winner of the available hands
+                    #             winner = bjk.find_winner(p_sum, d_sum)
+                    #             self.funds = bjk.bet_check(winner, self.funds, self.bet)
 
         return self.funds
 
@@ -228,8 +231,8 @@ class Game:
 if __name__ == "__main__":
     
     test = Game(bet=100, funds=10000)
-    print(test.deck)
-    
+    test.blackjack()
+
     
 
 

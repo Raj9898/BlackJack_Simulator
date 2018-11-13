@@ -91,7 +91,7 @@ def bet_check(value: int, funds: int, bet: int):
 
 
 # double bets and returns either 0 or doubles your initial bet, leverage and available funds
-def double(bet:int, funds: int):
+def double(bet: int, funds: int):
     doubler = bet * 2
 
     if doubler <= funds:
@@ -104,8 +104,9 @@ def double(bet:int, funds: int):
 def split(card_list: list):
     empty = []
     if card_list[0] == card_list[1]:
-        empty.append([x])
-        return empty
+        for card in card_list:
+            empty.append([card])
+            return empty
 
 
 # take out insurance in the event the dealer is showing a high card
