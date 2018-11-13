@@ -117,13 +117,16 @@ class Game:
                 # if you do not receive a natural 21 then you are asked to hit, stand, double or split
                 else:
                     strategy_df = pd.read_csv('blackjack_basic_strategy.csv')
+                    strategy_df = strategy_df.set_index('Players Hand')
                     player_ref = ','.join(players_hand)
                     hole_card = dealers_hand.pop()
 
-                    # strategy_df['Players Hand']
+                    try:
+                        action = strategy_df.loc[player_ref].loc[hole_card]
+                    except KeyError:
+                        action = strategy_df.loc[str(p_sum)].loc[hole_card]
 
-
-
+                    print(action, p_sum, hole_card)
 
                     # # if you do not want to split this sequence is executed
                     # if not self.split:
