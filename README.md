@@ -21,5 +21,5 @@ These are the general rule of Blackjack as played across most real/virtual casin
 
 ## Basic Strategy for Implementation
 Below is a basic strategy chart for players at casino-tables operating under the most common house rules. The following color codes identify play strategies perceived to be optimal play and are widely considered standard for new players looking to gain a competitive edge at the table. I will be referencing this table heavily when crafting strategies and allocating bet sizes.  <br/>
-!['SimpleStrategy'](https://github.com/Raj9898/BlackJack_Simulator/blob/master/_strats_/Blackjack-Basic-Strategy-Chart.png) <br/> 
+!['SimpleStrategy'](https://github.com/Raj9898/BlackJack_Simulator/blob/master/_misc_/Blackjack-Basic-Strategy-Chart.png) <br/> 
 
