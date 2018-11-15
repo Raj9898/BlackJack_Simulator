@@ -12,15 +12,14 @@ All Rights Reserved
 # Import Libraries and modules
 #############################################
 import random
-import numpy
 import pandas as pd
 
 
 def gen_deck(deck_num: int):
     """
     Generates a shoe (collection of cards) with 4 identically decks for the user, where suits don't matter
-    :param deck_num:
-    :return:
+    :param deck_num: the number of decks to generate for the user
+    :return: a list of shuffled decks for the user
     """
 
     deck = []
@@ -36,8 +35,8 @@ def gen_deck(deck_num: int):
 def sum_hand(card_values: list):
     """
     Calculates the sum of each hand as specified
-    :param card_values:
-    :return:
+    :param card_values: provide a list containing the face value of given cards
+    :return: returns the sum of card values defined by standard blackjack rules
     """
 
     card_sum = 0
@@ -57,9 +56,9 @@ def sum_hand(card_values: list):
 def dealer_serve(draw_func, dealers_hand: list):
     """
     Forces the dealer to draw until his sum is greater than or equal to 17
-    :param draw_func:
-    :param dealers_hand:
-    :return:
+    :param draw_func: provided function to simulate draw/hit for dealer
+    :param dealers_hand: a list of card values assigned to the dealer
+    :return: returns a new dealer list with updated cards appended to the original list
     """
 
     assert callable(draw_func) is True, 'Variable must be a function'
@@ -74,9 +73,9 @@ def dealer_serve(draw_func, dealers_hand: list):
 def find_winner(player_sum: int, dealer_sum: int):
     """
     Runs through the available hand sums to find the winner (1) you win, (-1) dealer wins (0) draw between dealer
-    :param player_sum:
-    :param dealer_sum:
-    :return:
+    :param player_sum: the value of the players hand
+    :param dealer_sum: the value of the dealers hand
+    :return: an integer from the set of [-1, 0, 1] indicating [loss, draw, win]
     """
 
     if dealer_sum < player_sum <= 21:
@@ -96,10 +95,10 @@ def find_winner(player_sum: int, dealer_sum: int):
 def bet_check(value: int, funds: int, bet: int):
     """
     Check to see whether to add or subtract value of bet from the funds
-    :param value:
-    :param funds:
-    :param bet:
-    :return:
+    :param value: the value which corresponds to the find_winner function
+    :param funds: the amount of funds available specified by the player
+    :param bet: the original bet amount specified by the player
+    :return: the new funds amount according to win/loss value
     """
 
     if value == 1:
@@ -116,25 +115,25 @@ def bet_check(value: int, funds: int, bet: int):
 def double_func(bet: int, funds: int):
     """
     Double bets and returns either 0 or doubles your initial bet, leverage and available funds
-    :param bet:
-    :param funds:
-    :return:
+    :param bet: the original bet amount specified by the player
+    :param funds: the amount of funds available specified by the player
+    :return: returns the new defined bet amount
     """
 
     doubler = bet * 2
     if doubler <= funds:
         return doubler
     else:
-        return 0
+        return bet
 
 
 def insurance_func(dealer_list: list, funds: int, insurance_bet: int):
     """
     Take out insurance in the event the dealer is showing a high card
-    :param dealer_list:
-    :param funds:
-    :param insurance_bet:
-    :return:
+    :param dealer_list: a list of card values assigned to the dealer
+    :param funds: the amount of funds available specified by the player
+    :param insurance_bet: specified insurance bet by user
+    :return: returns the insurance bet as specified by the user
     """
 
     show_card = dealer_list[0]
@@ -170,8 +169,6 @@ class Game:
         self.insurance = insurance
         self.double = double
         self.side_bet = side_bet
-
-        numpy.random.shuffle(self.deck)
 
     def _hit_(self, some_list: list):
         """
@@ -312,4 +309,5 @@ class Game:
 
 if __name__ == "__main__":
     test = Game(bet=100, funds=10000)
-    test.blackjack()
+    for i in range(0,100):
+        print(test.blackjack())
