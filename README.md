@@ -17,7 +17,7 @@ These are the general rule of Blackjack as played across most real/virtual casin
 7. **After each player has had his turn, the dealer will turn over his hole card. If the dealer has 16 or less, then he will draw another card. A special situation is when the dealer has an ace and any number of cards totaling six points (known as a "soft 17").**
 8. If the dealer goes over 21 points, then any player who didn't already bust will win.
 9. If the dealer does not bust, then the higher point total between the player and dealer will win.
-10. Winning wagers pay even money, except a winning player blackjack pays 3 to 2. 
+10. A win pays 1 to 1, while blackjack pays 3 to 2. 
 
 ## Basic Strategy for Implementation
 Below is a basic strategy chart for players at casino-tables operating under the most common house rules. The following color codes identify play strategies perceived to be optimal play and are widely considered standard for new players looking to gain a competitive edge at the table. I will be referencing this table heavily when crafting strategies and allocating bet sizes.  <br/>
