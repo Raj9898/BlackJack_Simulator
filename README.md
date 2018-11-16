@@ -20,8 +20,11 @@ These are the general rule of Blackjack as played across most real/virtual casin
 10. A win pays 1 to 1, while blackjack pays 3 to 2. 
 
 ## Basic Strategy for Implementation
-Below is a basic strategy chart for players at casino-tables operating under the most common house rules. The following color codes identify play strategies perceived to be optimal play and are widely considered standard for new players looking to gain a competitive edge at the table. I will be referencing this table heavily when crafting strategies and allocating bet sizes.  <br/>
+Below is a basic strategy chart for players at casino-tables operating under the most common house rules. The following color codes identify play strategies perceived to be optimal play and are widely considered standard for new players looking to gain a competitive edge at the table. I will be referencing this table heavily when crafting strategies.  <br/>
 !['SimpleStrategy'](https://github.com/Raj9898/BlackJack_Simulator/blob/master/_misc_/Blackjack-Basic-Strategy-Chart.png) <br/> 
+
+When simulating a basic strategy over a set of hands we can see the average P&L as simulated throguh Monte Carlo. 
+
 
 ## Card Counting Bet Adjustments
 Card counting is used to determine whether the next hand is likely to give a probable advantage to the player or to the dealer.The most common variations of card counting in blackjack are that high cards (especially aces and 10s) benefit the player more than the dealer, while the low cards, (3s, 4s, 6s, and especially 5s) help the dealer while hurting the player.
@@ -38,3 +41,6 @@ Omega II | +1 | +1 | +2 | +2 | +2 | +1 | 0 | -1 | -2 | 0
 Red 7 | +1 | +1 | +1 | +1 | +1 | +1 | 0 | 0 | -1 | -1
 Halves | +0.5 | +1 | +1 | +1.5 | +1 | +0.5 | 0 | -0.5 | -1 | -1 
 Zen Count | +1 | +1 | +2 | +2 | +2 | +1 | 0 | 0 | -2 | -1 
+
+When simulating a basic strategy as demonstrated above, with bet adjustments the average P&L is as follows:
+
