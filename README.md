@@ -23,3 +23,14 @@ These are the general rule of Blackjack as played across most real/virtual casin
 Below is a basic strategy chart for players at casino-tables operating under the most common house rules. The following color codes identify play strategies perceived to be optimal play and are widely considered standard for new players looking to gain a competitive edge at the table. I will be referencing this table heavily when crafting strategies and allocating bet sizes.  <br/>
 !['SimpleStrategy'](https://github.com/Raj9898/BlackJack_Simulator/blob/master/_misc_/Blackjack-Basic-Strategy-Chart.png) <br/> 
 
+## Card Counting Bet Adjustments
+Card Counting Strategies | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10, J, Q, K | A
+--- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
+Hi-Lo | +1 | +1 | +1 | +1 | +1 | 0 | 0 | 0 | -1 | -1 
+Hi-Opt I | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
+Hi-Opt II | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
+KO | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
+Omega II | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
+Red 7 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
+Halves | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
+Zen Count | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
