@@ -274,7 +274,7 @@ class Game:
                     swap_player_ref = '{le},{rg}'.format(le=player_ref[2],
                                                          rg=player_ref[0])
                     hole_card = dealers_hand.pop()
-                    
+
                     if player_ref in strategy_df.index:
                         action = strategy_df.loc[player_ref].loc[hole_card]
                     elif swap_player_ref in strategy_df.index:
@@ -312,7 +312,16 @@ class Game:
 
 
 if __name__ == "__main__":
-    test = Game(bet=100, funds=10000)
-    for i in range(0,100):
-        test.blackjack()
 
+    master_df = pd.DataFrame()
+    hand_sim = []
+
+    test = Game(bet=100, funds=10000)
+    for i in range(0, 100000):
+        funds = test.blackjack()
+        print(funds)
+        # hand_sim.append(funds)
+
+    # sample_df = pd.DataFrame(data=hand_sim, columns=['player_{}'.format(player)])
+
+    print(hand_sim)
