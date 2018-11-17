@@ -271,11 +271,15 @@ class Game:
                     strategy_df = pd.read_csv('blackjack_basic_strategy.csv')
                     strategy_df = strategy_df.set_index('Players Hand')
                     player_ref = ','.join(players_hand)
+                    swap_player_ref = '{le},{rg}'.format(le=player_ref[2],
+                                                         rg=player_ref[0])
                     hole_card = dealers_hand.pop()
-
-                    try:
+                    
+                    if player_ref in strategy_df.index:
                         action = strategy_df.loc[player_ref].loc[hole_card]
-                    except KeyError:
+                    elif swap_player_ref in strategy_df.index:
+                        action = strategy_df.loc[swap_player_ref].loc[hole_card]
+                    else:
                         action = strategy_df.loc[str(p_sum)].loc[hole_card]
 
                     final_dealer_hand = dealer_serve(draw_func=self._hit_,
@@ -310,4 +314,5 @@ class Game:
 if __name__ == "__main__":
     test = Game(bet=100, funds=10000)
     for i in range(0,100):
-        print(test.blackjack())
+        test.blackjack()
+
