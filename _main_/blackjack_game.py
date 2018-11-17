@@ -194,8 +194,8 @@ class Game:
         new_d_sum = sum_hand(card_values=dealer_hand)
 
         val = find_winner(player_sum=new_p_sum, dealer_sum=new_d_sum)
-        self.funds = bet_check(value=val, funds=self.funds, bet=bet)
-        return self.funds
+        funds = bet_check(value=val, funds=self.funds, bet=bet)
+        return funds
 
     def _split_(self, card_list: list):
         """
@@ -265,6 +265,8 @@ class Game:
                 # if you receive a natural 21 you receive a 3:2 payout and dealer loses
                 if p_sum == 21 and d_sum < 21:
                     self.funds += ((self.bet / 2) * 3)
+                elif p_sum == 21 and d_sum == 21:
+                    pass
 
                 # if you do not receive a natural 21 then you are asked to hit, stand, double or split
                 else:
@@ -313,15 +315,23 @@ class Game:
 
 if __name__ == "__main__":
 
+    import matplotlib.pyplot as plt
+
     master_df = pd.DataFrame()
-    hand_sim = []
 
-    test = Game(bet=100, funds=10000)
-    for i in range(0, 100000):
-        funds = test.blackjack()
-        print(funds)
-        # hand_sim.append(funds)
+    for player in range(0, 25):
+        test = Game(bet=100, funds=10000)
+        hand_sim = []
+        for i in range(0, 100):
+            wins = test.blackjack()
+            hand_sim.append(wins)
+        sample_df = pd.DataFrame({'player_{}'.format(player): hand_sim})
 
-    # sample_df = pd.DataFrame(data=hand_sim, columns=['player_{}'.format(player)])
+        if len(master_df) == 0:
+            master_df = master_df.append(sample_df)
+        else:
+            master_df = master_df.join(sample_df)
 
-    print(hand_sim)
+    ax = master_df.plot()
+    ax.set_title('Betting BlackJack P&L', fontsize=10)
+    plt.show()
