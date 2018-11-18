@@ -145,7 +145,7 @@ def insurance_func(dealer_list: list, funds: int, insurance_bet: int):
 class Game:
 
     def __init__(self, bet: int, funds: int, side_bet: int = 0, deck_num: int = 4, split: bool = True,
-                 insurance: bool = False, double: bool = True):
+                 insurance: bool = False, double: bool = True, bet_scaler: bool=None, card_counter: str=None):
         """
         Initializes the game with predefined arguments regarding game structure
         :param bet: determines the size of initial and subsequent bets (type integer)
@@ -169,6 +169,8 @@ class Game:
         self.insurance = insurance
         self.double = double
         self.side_bet = side_bet
+        self.scale = bet_scaler
+        self.card_counter = card_counter
 
     def _hit_(self, some_list: list):
         """
@@ -310,28 +312,11 @@ class Game:
                                                      dealer_hand=final_dealer_hand,
                                                      bet=bet_amt)
 
-        return self.funds
+        return self.funds, players_hand, dealers_hand
 
+    def _scaler_(self):
+        card_counting_strategy = ['Hi-Lo', 'Hi-Opt I', 'Hi-Opt II', 'KO', 'Omega II', 'Red 7', 'Halves', 'Zen Count']
 
-if __name__ == "__main__":
-
-    import matplotlib.pyplot as plt
-
-    master_df = pd.DataFrame()
-
-    for player in range(0, 25):
-        test = Game(bet=100, funds=10000)
-        hand_sim = []
-        for i in range(0, 100):
-            wins = test.blackjack()
-            hand_sim.append(wins)
-        sample_df = pd.DataFrame({'player_{}'.format(player): hand_sim})
-
-        if len(master_df) == 0:
-            master_df = master_df.append(sample_df)
-        else:
-            master_df = master_df.join(sample_df)
-
-    ax = master_df.plot()
-    ax.set_title('Betting BlackJack P&L', fontsize=10)
-    plt.show()
+        count_strategy_df = pd.read_csv('card_count_strategy.csv')
+        count_strategy_df = count_strategy_df.set_index('Card Counting Strategies')
+        return 0
