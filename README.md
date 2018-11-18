@@ -23,7 +23,7 @@ These are the general rule of Blackjack as played across most real/virtual casin
 Below is a basic strategy chart for players at casino-tables operating under the most common house rules. The following color codes identify play strategies perceived to be optimal play and are widely considered standard for new players looking to gain a competitive edge at the table. I will be referencing this table heavily when crafting strategies.  <br/>
 !['SimpleStrategy'](https://github.com/Raj9898/BlackJack_Simulator/blob/master/_misc_/Blackjack-Basic-Strategy-Chart.png) <br/> 
 
-When simulating a basic strategy over a set of hands we can see the average P&L as simulated throguh Monte Carlo. 
+Simulating a basic strategy over *n* arbitrary hands we fix *n* to be 75,100,125,150 and calculate the average PnL as simulated via a Monte Carlo with *100* "distinct players" representing disjoint instances. 
 
 
 ## Card Counting Bet Adjustments
