@@ -320,3 +320,7 @@ class Game:
         count_strategy_df = pd.read_csv('card_count_strategy.csv')
         count_strategy_df = count_strategy_df.set_index('Card Counting Strategies')
         return 0
+
+
+if __name__ == "__main__":
+    print(1)
