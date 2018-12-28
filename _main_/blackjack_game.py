@@ -13,6 +13,7 @@ All Rights Reserved
 #############################################
 import random
 import pandas as pd
+import numpy as np
 
 
 def gen_deck(deck_num: int):
@@ -22,11 +23,8 @@ def gen_deck(deck_num: int):
     :return: a list of shuffled decks for the user
     """
 
-    deck = []
     ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
-    for suit in range(0, 4):
-        for rank in ranks:
-            deck.append('{}'.format(rank))
+    deck = np.fromiter([j for _ in range(0, 4) for j in ranks], int)
     big_deck = deck * deck_num
     random.shuffle(big_deck)
     return big_deck
@@ -44,7 +42,7 @@ def sum_hand(card_values: list):
         if card == 'K' or card == 'J' or card == 'Q':
             card_sum += 10
         elif card == 'A':
-            if card_sum < 10:
+            if card_sum < 11:
                 card_sum += 11
             else:
                 card_sum += 1
@@ -161,7 +159,7 @@ class Game:
 
         self.deck_num = deck_num
         self.deck = gen_deck(deck_num=self.deck_num)
-        self.reshuffle_threshold = len(self.deck) - round(len(self.deck) / 3)
+        self.reshuffle_threshold = 60
 
         self.bet = bet
         self.funds = funds
@@ -319,8 +317,18 @@ class Game:
 
         count_strategy_df = pd.read_csv('card_count_strategy.csv')
         count_strategy_df = count_strategy_df.set_index('Card Counting Strategies')
+
+        rule_set = count_strategy_df.loc[card_strategy]
+
         return 0
 
 
 if __name__ == "__main__":
-    print(1)
+#     import time
+#     t1 = time.process_time()
+#     g = Game(bet=100, funds=10000)
+#     game1 = g.blackjack()
+#     print(game1)
+#     print(t1-time.process_time())
+
+    print(gen_deck(4))
