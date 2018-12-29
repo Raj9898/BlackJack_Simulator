@@ -8,10 +8,9 @@ All Rights Reserved
 ==========================================
 """
 
-#############################################
+##################################################
 # Import Libraries and modules
-#############################################
-import random
+##################################################
 import pandas as pd
 import numpy as np
 
@@ -24,13 +23,12 @@ def gen_deck(deck_num: int):
     """
 
     ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
-    deck = np.fromiter([j for _ in range(0, 4) for j in ranks], int)
-    big_deck = deck * deck_num
-    random.shuffle(big_deck)
-    return big_deck
+    deck = np.array([i for _ in range(0, 4 * deck_num) for i in ranks], str)
+    np.random.shuffle(deck)
+    return deck
 
 
-def sum_hand(card_values: list):
+def sum_hand(card_values: np.array):
     """
     Calculates the sum of each hand as specified
     :param card_values: provide a list containing the face value of given cards
@@ -51,7 +49,7 @@ def sum_hand(card_values: list):
     return card_sum
 
 
-def dealer_serve(draw_func, dealers_hand: list):
+def dealer_serve(draw_func, dealers_hand: np.array):
     """
     Forces the dealer to draw until his sum is greater than or equal to 17
     :param draw_func: provided function to simulate draw/hit for dealer
@@ -125,7 +123,7 @@ def double_func(bet: int, funds: int):
         return bet
 
 
-def insurance_func(dealer_list: list, funds: int, insurance_bet: int):
+def insurance_func(dealer_list: np.array, funds: int, insurance_bet: int):
     """
     Take out insurance in the event the dealer is showing a high card
     :param dealer_list: a list of card values assigned to the dealer
@@ -143,7 +141,7 @@ def insurance_func(dealer_list: list, funds: int, insurance_bet: int):
 class Game:
 
     def __init__(self, bet: int, funds: int, side_bet: int = 0, deck_num: int = 4, split: bool = True,
-                 insurance: bool = False, double: bool = True, bet_scaler: bool=None, card_counter: str=None):
+                 insurance: bool = False, double: bool = True, card_counter: str=None):
         """
         Initializes the game with predefined arguments regarding game structure
         :param bet: determines the size of initial and subsequent bets (type integer)
@@ -153,13 +151,14 @@ class Game:
         :param split: indicates the player's preference to split if available (type bool)
         :param insurance: indicates the player's preference to take out insurance if available (type bool)
         :param double: indicates the player's preference to double if available (type bool)
+        :param card_counter: optional strategy specifying card counting strategy(type str)
         """
 
         assert bet < funds, "The value of your bet exceeds your total funds"
 
         self.deck_num = deck_num
         self.deck = gen_deck(deck_num=self.deck_num)
-        self.reshuffle_threshold = 60
+        self.reshuffle_threshold = round(len(self.deck)*.75)
 
         self.bet = bet
         self.funds = funds
@@ -167,21 +166,22 @@ class Game:
         self.insurance = insurance
         self.double = double
         self.side_bet = side_bet
-        self.scale = bet_scaler
-        self.card_counter = card_counter
 
-    def _hit_(self, some_list: list):
+        self.card_counter = card_counter
+        self.cards_played = np.array([])
+
+    def _hit_(self, some_list: np.array):
         """
         Hit functionality for another card to be drawn for the user
         :param some_list: referencing the player/dealer hands
         :return: a new list with an additional card added
         """
 
-        new_card = self.deck.pop()
-        some_list.append(new_card)
+        self.deck, new_card = self.deck[:-1], self.deck[-1]
+        some_list = np.append(some_list, new_card)
         return some_list
 
-    def _sequence_(self, players_hand: list, dealer_hand: list, bet: int):
+    def _sequence_(self, players_hand: np.array, dealer_hand: np.array, bet: int):
         """
         Executes a typical game structure following initial betting round to find a winner
         :param players_hand: a list of the players cards
@@ -197,20 +197,21 @@ class Game:
         funds = bet_check(value=val, funds=self.funds, bet=bet)
         return funds
 
-    def _split_(self, card_list: list):
+    def _split_(self, card_list: np.array):
         """
         Splits the players cards if they happen to contain the same face value card
         :param card_list: the players cards expressed as a list
         :return: a new list of length 2 with two lists within each element => [['K','2'],['K','10']]
         """
 
-        empty = []
+        empty = np.array([])
         if card_list[0] == card_list[1]:
             for card in card_list:
-                empty.append([card, self.deck.pop()])
+                self.deck, new_card = self.deck[:-1], self.deck[-1]
+                empty = np.append(empty, [card, new_card])
         return empty
 
-    def starting_serve(self):
+    def _starting_serve_(self):
         """
         Simulates two card draws for both the player and dealer
         :return: two lists, one representing the players 2 card draw and the other for the dealer
@@ -219,27 +220,34 @@ class Game:
         if len(self.deck) < self.reshuffle_threshold:
             self.deck = gen_deck(deck_num=self.deck_num)
 
-        dealers_hand = []
-        players_hand = []
+        dealers_hand = np.array([])
+        players_hand = np.array([])
 
         # deals a hand of 2 cards to the player and dealer by popping the last unit of the shuffled list
-        for x in range(0, 2):
-            dealer_card = self.deck.pop()
-            dealers_hand.append(dealer_card)
+        for _ in range(0, 2):
+            self.deck, dealer_card = self.deck[:-1], self.deck[-1]
+            dealers_hand = np.append(dealers_hand, dealer_card)
 
-            player_card = self.deck.pop()
-            players_hand.append(player_card)
+            self.deck, player_card = self.deck[:-1], self.deck[-1]
+            players_hand = np.append(players_hand, player_card)
 
         return dealers_hand, players_hand
 
-    def blackjack(self, dealers_hand: list= None, players_hand: list=None):
+    def _scaler_(self):
+        count_strategy_df = pd.read_csv('card_count_strategy.csv')
+        count_strategy_df = count_strategy_df.set_index('Card Counting Strategies')
+
+        rule_set = count_strategy_df.loc[self.card_counter]
+        return sum([rule_set.loc[card] for card in self.cards_played])
+
+    def blackjack(self, dealers_hand: np.array= None, players_hand: np.array=None):
         """
         simulates a game of blackjack as per specification imputed by user
         :return: available funds after successful completion of hand
         """
 
-        if dealers_hand is None and players_hand is None:
-            dealers_hand, players_hand = self.starting_serve()
+        if dealers_hand is None or players_hand is None:
+            dealers_hand, players_hand = self._starting_serve_()
 
         if self.funds > 0:
 
@@ -275,7 +283,7 @@ class Game:
                     player_ref = ','.join(players_hand)
                     swap_player_ref = '{le},{rg}'.format(le=player_ref[2],
                                                          rg=player_ref[0])
-                    hole_card = dealers_hand.pop()
+                    hole_card = dealers_hand[0]
 
                     if player_ref in strategy_df.index:
                         action = strategy_df.loc[player_ref].loc[hole_card]
@@ -300,8 +308,9 @@ class Game:
 
                     elif action == 'SP' and self.split:
                         split_hand = self._split_(card_list=players_hand)
-                        for hand in split_hand:
-                            self.blackjack(dealers_hand=final_dealer_hand, players_hand=hand)
+                        for card in range(0, len(split_hand), 2):
+                            new_player_hand = split_hand[card:card + 2]
+                            self.blackjack(dealers_hand=final_dealer_hand, players_hand=new_player_hand)
 
                     elif action == 'Double' and self.double:
                         bet_amt = double_func(bet=self.bet, funds=self.funds)
@@ -310,25 +319,16 @@ class Game:
                                                      dealer_hand=final_dealer_hand,
                                                      bet=bet_amt)
 
-        return self.funds, players_hand, dealers_hand
+                    self.cards_played = np.append(self.cards_played, final_dealer_hand)
 
-    def _scaler_(self):
-        card_counting_strategy = ['Hi-Lo', 'Hi-Opt I', 'Hi-Opt II', 'KO', 'Omega II', 'Red 7', 'Halves', 'Zen Count']
-
-        count_strategy_df = pd.read_csv('card_count_strategy.csv')
-        count_strategy_df = count_strategy_df.set_index('Card Counting Strategies')
-
-        rule_set = count_strategy_df.loc[card_strategy]
-
-        return 0
+        return self.funds, self.bet
 
 
 if __name__ == "__main__":
-#     import time
-#     t1 = time.process_time()
-#     g = Game(bet=100, funds=10000)
-#     game1 = g.blackjack()
-#     print(game1)
-#     print(t1-time.process_time())
-
-    print(gen_deck(4))
+    import time
+    t1 = time.process_time()
+    g = Game(bet=100, funds=10000, card_counter='Hi-Lo')
+    # print(g.blackjack(dealers_hand=np.array(['6', '7']),
+    #                   players_hand=np.array(['8', '8'])))
+    print(g._scaler_())
+    print(t1-time.process_time())
