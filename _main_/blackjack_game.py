@@ -23,7 +23,7 @@ def gen_deck(deck_num: int):
     """
 
     ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
-    deck = np.array([i for _ in range(0, 4 * deck_num) for i in ranks], str)
+    deck = np.array([i for _ in range(4 * deck_num) for i in ranks], str)
     np.random.shuffle(deck)
     return deck
 
@@ -141,7 +141,7 @@ def insurance_func(dealer_list: np.array, funds: int, insurance_bet: int):
 class Game:
 
     def __init__(self, bet: int, funds: int, side_bet: int = 0, deck_num: int = 4, split: bool = True,
-                 insurance: bool = False, double: bool = True, card_counter: str=None):
+                 insurance: bool = False, double: bool = True, card_counter: str = None):
         """
         Initializes the game with predefined arguments regarding game structure
         :param bet: determines the size of initial and subsequent bets (type integer)
@@ -155,10 +155,11 @@ class Game:
         """
 
         assert bet < funds, "The value of your bet exceeds your total funds"
+        assert bet > 10, 'Bet value too low, minimum threshold is 10'
 
         self.deck_num = deck_num
         self.deck = gen_deck(deck_num=self.deck_num)
-        self.reshuffle_threshold = round(len(self.deck)*.75)
+        self.reshuffle_threshold = round(len(self.deck) * .75)
 
         self.bet = bet
         self.funds = funds
@@ -169,6 +170,9 @@ class Game:
 
         self.card_counter = card_counter
         self.cards_played = np.array([])
+        self.count_strategy_df = pd.read_csv('card_count_strategy.csv')
+        self.count_strategy_df = self.count_strategy_df.set_index('Card Counting Strategies')
+        self.cs = np.array(['Hi-Lo', 'Hi-Opt I', 'Hi-Opt I', 'KO', 'Omega II', 'Red 7', 'Halves', 'Zen Count'])
 
     def _hit_(self, some_list: np.array):
         """
@@ -233,14 +237,11 @@ class Game:
 
         return dealers_hand, players_hand
 
-    def _scaler_(self):
-        count_strategy_df = pd.read_csv('card_count_strategy.csv')
-        count_strategy_df = count_strategy_df.set_index('Card Counting Strategies')
+    def _scaler_(self, rolling_cards: np.array):
+        rule_set = self.count_strategy_df.loc[self.card_counter]
+        return sum([rule_set.loc[card] for card in rolling_cards])
 
-        rule_set = count_strategy_df.loc[self.card_counter]
-        return sum([rule_set.loc[card] for card in self.cards_played])
-
-    def blackjack(self, dealers_hand: np.array= None, players_hand: np.array=None):
+    def blackjack(self, dealers_hand: np.array = None, players_hand: np.array = None):
         """
         simulates a game of blackjack as per specification imputed by user
         :return: available funds after successful completion of hand
@@ -296,8 +297,8 @@ class Game:
                                                      dealers_hand=dealers_hand)
 
                     if action == 'H':
-                        new_hand = self._hit_(players_hand)
-                        self.funds = self._sequence_(players_hand=new_hand,
+                        players_hand = self._hit_(players_hand)
+                        self.funds = self._sequence_(players_hand=players_hand,
                                                      dealer_hand=final_dealer_hand,
                                                      bet=self.bet)
 
@@ -312,23 +313,26 @@ class Game:
                             new_player_hand = split_hand[card:card + 2]
                             self.blackjack(dealers_hand=final_dealer_hand, players_hand=new_player_hand)
 
-                    elif action == 'Double' and self.double:
+                    elif action == 'D' and self.double:
                         bet_amt = double_func(bet=self.bet, funds=self.funds)
-                        new_hand = self._hit_(players_hand)
-                        self.funds = self._sequence_(players_hand=new_hand,
+                        players_hand = self._hit_(players_hand)
+                        self.funds = self._sequence_(players_hand=players_hand,
                                                      dealer_hand=final_dealer_hand,
                                                      bet=bet_amt)
 
+                    else:
+                        self.funds = self._sequence_(players_hand=players_hand,
+                                                     dealer_hand=final_dealer_hand,
+                                                     bet=self.bet)
+
                     self.cards_played = np.append(self.cards_played, final_dealer_hand)
+                    self.cards_played = np.append(self.cards_played, players_hand)
 
-        return self.funds, self.bet
+        if self.card_counter in self.cs:
+            card_count = self._scaler_(self.cards_played)
+            if card_count > 10:
+                self.bet += self.bet * 0.1
+            elif card_count < -10:
+                self.bet -= self.bet * 0.1
 
-
-if __name__ == "__main__":
-    import time
-    t1 = time.process_time()
-    g = Game(bet=100, funds=10000, card_counter='Hi-Lo')
-    # print(g.blackjack(dealers_hand=np.array(['6', '7']),
-    #                   players_hand=np.array(['8', '8'])))
-    print(g._scaler_())
-    print(t1-time.process_time())
+        return self.funds
