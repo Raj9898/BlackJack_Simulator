@@ -93,7 +93,7 @@ basic_strategy_profile = {'2': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17'
                                 '8,8': 'SP', '10,10': 'S', '9,9': 'S', '7,7': 'H', '6,6': 'H', '5,5': 'H',
                                 '4,4': 'H', '3,3': 'H', '2,2': 'H'}}
 
-# call pd.read_csv('card_count_strategy.csv').set_index('Card Counting Strategies').transpose().to_dict()
+# function call pd.read_csv('card_count_strategy.csv').set_index('Card Counting Strategies').transpose().to_dict()
 card_counting_profiles = {'Hi-Lo': {'2': 1.0, '3': 1.0, '4': 1.0, '5': 1.0, '6': 1.0, '7': 0.0,
                                     '8': 0.0, '9': 0.0, '10': -1.0, 'J': -1.0, 'Q': -1.0, 'K': -1.0, 'A': -1.0},
                           'Hi-Opt I': {'2': 0.0, '3': 1.0, '4': 1.0, '5': 1.0, '6': 1.0, '7': 0.0,
@@ -125,25 +125,22 @@ def gen_deck(deck_num: int):
     return deck
 
 
-def sum_hand(card_values: np.array):
+def sum_hand(hand: np.array):
     """
     Calculates the sum of each hand as specified
-    :param card_values: provide a list containing the face value of given cards
+    :param hand: provide a list containing the face value of given cards
     :return: returns the sum of card values defined by standard blackjack rules
     """
+    value_dict = {'A': [1, 11], '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
+                  '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10}
 
-    card_sum = 0
-    for card in card_values:
-        if card == 'K' or card == 'J' or card == 'Q':
-            card_sum += 10
-        elif card == 'A':
-            if card_sum < 11:
-                card_sum += 11
-            else:
-                card_sum += 1
-        else:
-            card_sum += int(card)
-    return card_sum
+    val_1 = [value_dict[i] if i != 'A' else value_dict[i][0] for i in hand]
+    val_2 = [value_dict[i] if i != 'A' else value_dict[i][1] for i in hand]
+
+    hand_val = {(max(sum(val_1), sum(val_2)) <= 21): max(sum(val_1), sum(val_2)),
+                (max(sum(val_1), sum(val_2)) > 21): min(sum(val_1), sum(val_2))}
+
+    return hand_val[True]
 
 
 def dealer_serve(draw_func, dealers_hand: np.array):
@@ -277,8 +274,8 @@ class Game:
         """
 
         # computes the sum of both dealer and player's hand
-        new_p_sum = sum_hand(card_values=players_hand)
-        new_d_sum = sum_hand(card_values=dealer_hand)
+        new_p_sum = sum_hand(hand=players_hand)
+        new_d_sum = sum_hand(hand=dealer_hand)
 
         # identifies a winner for a given game sequence
         val = find_winner(player_sum=new_p_sum, dealer_sum=new_d_sum)
@@ -341,8 +338,8 @@ class Game:
                                                insurance_bet=self.side_bet)
 
             # returns the sum of player's and the dealer's respective hand value
-            d_sum = sum_hand(card_values=dealers_hand)
-            p_sum = sum_hand(card_values=players_hand)
+            d_sum = sum_hand(hand=dealers_hand)
+            p_sum = sum_hand(hand=players_hand)
 
             # checks to see if dealer has a natural 21 on the first draw/deal
             if d_sum == 21 and p_sum < 21:
