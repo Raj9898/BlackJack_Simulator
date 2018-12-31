@@ -11,8 +11,105 @@ All Rights Reserved
 ##################################################
 # Import Libraries and modules
 ##################################################
-import pandas as pd
 import numpy as np
+
+# created through function call pd.read_csv('blackjack_basic_strategy.csv').set_index('Players Hand').to_dict()
+basic_strategy_profile = {'2': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'S', '15': 'S',
+                                '14': 'S', '13': 'S', '12': 'H', '11': 'D', '10': 'D', '9': 'H', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'S',
+                                'A,6': 'H', 'A,5': 'H', 'A,4': 'H', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'SP', '7,7': 'SP', '6,6': 'SP', '5,5': 'D',
+                                '4,4': 'H', '3,3': 'SP', '2,2': 'SP'},
+                          '3': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'S', '15': 'S',
+                                '14': 'S', '13': 'S', '12': 'H', '11': 'D', '10': 'D', '9': 'D', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'D',
+                                'A,6': 'D', 'A,5': 'H', 'A,4': 'H', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'SP', '7,7': 'SP', '6,6': 'SP', '5,5': 'D',
+                                '4,4': 'H', '3,3': 'SP', '2,2': 'SP'},
+                          '4': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'S', '15': 'S',
+                                '14': 'S', '13': 'S', '12': 'S', '11': 'D', '10': 'D', '9': 'D', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'D',
+                                'A,6': 'D', 'A,5': 'D', 'A,4': 'D', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'SP', '7,7': 'SP', '6,6': 'SP', '5,5': 'D',
+                                '4,4': 'H', '3,3': 'SP', '2,2': 'SP'},
+                          '5': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'S', '15': 'S',
+                                '14': 'S', '13': 'S', '12': 'S', '11': 'D', '10': 'D', '9': 'D', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'D',
+                                'A,6': 'D', 'A,5': 'D', 'A,4': 'D', 'A,3': 'D', 'A,2': 'D', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'SP', '7,7': 'SP', '6,6': 'SP', '5,5': 'D',
+                                '4,4': 'SP', '3,3': 'SP', '2,2': 'SP'},
+                          '6': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'S', '15': 'S',
+                                '14': 'S', '13': 'S', '12': 'S', '11': 'D', '10': 'D', '9': 'D', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'D',
+                                'A,6': 'D', 'A,5': 'D', 'A,4': 'D', 'A,3': 'D', 'A,2': 'D', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'SP', '7,7': 'SP', '6,6': 'SP', '5,5': 'D',
+                                '4,4': 'SP', '3,3': 'SP', '2,2': 'SP'},
+                          '7': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'H', '15': 'H',
+                                '14': 'H', '13': 'H', '12': 'H', '11': 'D', '10': 'D', '9': 'H', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'S',
+                                'A,6': 'H', 'A,5': 'H', 'A,4': 'H', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'S', '7,7': 'SP', '6,6': 'H', '5,5': 'D',
+                                '4,4': 'H', '3,3': 'SP', '2,2': 'SP'},
+                          '8': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'H', '15': 'H',
+                                '14': 'H', '13': 'H', '12': 'H', '11': 'D', '10': 'D', '9': 'H', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'S',
+                                'A,6': 'H', 'A,5': 'H', 'A,4': 'H', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'SP', '7,7': 'H', '6,6': 'H', '5,5': 'D',
+                                '4,4': 'H', '3,3': 'H', '2,2': 'H'},
+                          '9': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'H', '15': 'H',
+                                '14': 'H', '13': 'H', '12': 'H', '11': 'D', '10': 'D', '9': 'H', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'H',
+                                'A,6': 'H', 'A,5': 'H', 'A,4': 'H', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'SP', '7,7': 'H', '6,6': 'H', '5,5': 'D',
+                                '4,4': 'H', '3,3': 'H', '2,2': 'H'},
+                          '10': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'H', '15': 'H',
+                                 '14': 'H', '13': 'H', '12': 'H', '11': 'D', '10': 'H', '9': 'H', '8': 'H',
+                                 '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'H',
+                                 'A,6': 'H', 'A,5': 'H', 'A,4': 'H', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                 '8,8': 'SP', '10,10': 'S', '9,9': 'S', '7,7': 'H', '6,6': 'H', '5,5': 'H',
+                                 '4,4': 'H', '3,3': 'H', '2,2': 'H'},
+                          'J': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'H', '15': 'H',
+                                '14': 'H', '13': 'H', '12': 'H', '11': 'D', '10': 'H', '9': 'H', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'H',
+                                'A,6': 'H', 'A,5': 'H', 'A,4': 'H', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'S', '7,7': 'H', '6,6': 'H', '5,5': 'H',
+                                '4,4': 'H', '3,3': 'H', '2,2': 'H'},
+                          'Q': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'H', '15': 'H',
+                                '14': 'H', '13': 'H', '12': 'H', '11': 'D', '10': 'H', '9': 'H', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'H',
+                                'A,6': 'H', 'A,5': 'H', 'A,4': 'H', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'S', '7,7': 'H', '6,6': 'H', '5,5': 'H',
+                                '4,4': 'H', '3,3': 'H', '2,2': 'H'},
+                          'K': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'H', '15': 'H',
+                                '14': 'H', '13': 'H', '12': 'H', '11': 'D', '10': 'H', '9': 'H', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'H',
+                                'A,6': 'H', 'A,5': 'H', 'A,4': 'H', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'S', '7,7': 'H', '6,6': 'H', '5,5': 'H',
+                                '4,4': 'H', '3,3': 'H', '2,2': 'H'},
+                          'A': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'H', '15': 'H',
+                                '14': 'H', '13': 'H', '12': 'H', '11': 'H', '10': 'H', '9': 'H', '8': 'H',
+                                '7': 'H', '6': 'H', '5': 'H', 'A,10': 'S', 'A,9': 'S', 'A,8': 'S', 'A,7': 'H',
+                                'A,6': 'H', 'A,5': 'H', 'A,4': 'H', 'A,3': 'H', 'A,2': 'H', 'A,A': 'SP',
+                                '8,8': 'SP', '10,10': 'S', '9,9': 'S', '7,7': 'H', '6,6': 'H', '5,5': 'H',
+                                '4,4': 'H', '3,3': 'H', '2,2': 'H'}}
+
+# call pd.read_csv('card_count_strategy.csv').set_index('Card Counting Strategies').transpose().to_dict()
+card_counting_profiles = {'Hi-Lo': {'2': 1.0, '3': 1.0, '4': 1.0, '5': 1.0, '6': 1.0, '7': 0.0,
+                                    '8': 0.0, '9': 0.0, '10': -1.0, 'J': -1.0, 'Q': -1.0, 'K': -1.0, 'A': -1.0},
+                          'Hi-Opt I': {'2': 0.0, '3': 1.0, '4': 1.0, '5': 1.0, '6': 1.0, '7': 0.0,
+                                       '8': 0.0, '9': 0.0, '10': -1.0, 'J': -1.0, 'Q': -1.0, 'K': -1.0, 'A': 0.0},
+                          'Hi-Opt II': {'2': 1.0, '3': 1.0, '4': 2.0, '5': 2.0, '6': 1.0, '7': 1.0,
+                                        '8': 0.0, '9': 0.0, '10': -2.0, 'J': -2.0, 'Q': -2.0, 'K': -2.0, 'A': 0.0},
+                          'KO': {'2': 1.0, '3': 1.0, '4': 1.0, '5': 1.0, '6': 1.0, '7': 1.0, '8': 0.0,
+                                 '9': 0.0, '10': -1.0, 'J': -1.0, 'Q': -1.0, 'K': -1.0, 'A': -1.0},
+                          'Omega II': {'2': 1.0, '3': 1.0, '4': 2.0, '5': 2.0, '6': 2.0, '7': 1.0,
+                                       '8': 0.0, '9': -1.0, '10': -2.0, 'J': -2.0, 'Q': -2.0, 'K': -2.0, 'A': 0.0},
+                          'Red 7': {'2': 1.0, '3': 1.0, '4': 1.0, '5': 1.0, '6': 1.0, '7': 1.0,
+                                    '8': 0.0, '9': 0.0, '10': -1.0, 'J': -1.0, 'Q': -1.0, 'K': -1.0, 'A': -1.0},
+                          'Halves': {'2': 0.5, '3': 1.0, '4': 1.0, '5': 1.5, '6': 1.0, '7': 0.5,
+                                     '8': 0.0, '9': -0.5, '10': -1.0, 'J': -1.0, 'Q': -1.0, 'K': -1.0, 'A': -1.0},
+                          'Zen Count': {'2': 1.0, '3': 1.0, '4': 2.0, '5': 2.0, '6': 2.0, '7': 1.0,
+                                        '8': 0.0, '9': 0.0, '10': -2.0, 'J': -2.0, 'Q': -2.0, 'K': -2.0, 'A': -1.0}}
 
 
 def gen_deck(deck_num: int):
@@ -68,24 +165,20 @@ def dealer_serve(draw_func, dealers_hand: np.array):
 
 def find_winner(player_sum: int, dealer_sum: int):
     """
-    Runs through the available hand sums to find the winner (1) you win, (-1) dealer wins (0) draw between dealer
+    Looks up the available hand sums to find the winner (1) you win, (-1) dealer wins (0) draw between dealer
     :param player_sum: the value of the players hand
     :param dealer_sum: the value of the dealers hand
     :return: an integer from the set of [-1, 0, 1] indicating [loss, draw, win]
     """
 
-    if dealer_sum < player_sum <= 21:
-        return 1
-    elif player_sum < dealer_sum <= 21:
-        return -1
-    elif player_sum == dealer_sum:
-        return 0
-    elif player_sum > 21 and dealer_sum > 21:
-        return 0
-    elif player_sum > 21 >= dealer_sum:
-        return -1
-    elif dealer_sum > 21 >= player_sum:
-        return 1
+    win_dict = {(dealer_sum < player_sum <= 21): 1,
+                (player_sum < dealer_sum <= 21): -1,
+                (player_sum == dealer_sum): 0,
+                (player_sum > 21 and dealer_sum > 21): 0,
+                (player_sum > 21 >= dealer_sum): -1,
+                (dealer_sum > 21 >= player_sum): 1}
+
+    return win_dict[True]
 
 
 def bet_check(value: int, funds: int, bet: int):
@@ -97,15 +190,8 @@ def bet_check(value: int, funds: int, bet: int):
     :return: the new funds amount according to win/loss value
     """
 
-    if value == 1:
-        funds += bet
-        return funds
-    elif value == -1:
-        funds -= bet
-        return funds
-    elif value == 0:
-        funds += 0
-        return funds
+    value_assign = {1: bet, -1: -bet, 0: 0}
+    return funds + value_assign[value]
 
 
 def double_func(bet: int, funds: int):
@@ -117,10 +203,8 @@ def double_func(bet: int, funds: int):
     """
 
     doubler = bet * 2
-    if doubler <= funds:
-        return doubler
-    else:
-        return bet
+    double_dict = {(doubler <= funds): doubler, (doubler > funds): bet}
+    return double_dict[True]
 
 
 def insurance_func(dealer_list: np.array, funds: int, insurance_bet: int):
@@ -132,10 +216,8 @@ def insurance_func(dealer_list: np.array, funds: int, insurance_bet: int):
     :return: returns the insurance bet as specified by the user
     """
 
-    show_card = dealer_list[0]
-    if show_card == 'A':
-        if insurance_bet < funds:
-            return insurance_bet
+    if dealer_list[0] == 'A' and (insurance_bet < funds):
+        return insurance_bet
 
 
 class Game:
@@ -159,7 +241,7 @@ class Game:
 
         self.deck_num = deck_num
         self.deck = gen_deck(deck_num=self.deck_num)
-        self.reshuffle_threshold = round(len(self.deck) * .75)
+        self.reshuffle_threshold = 60
 
         self.bet = bet
         self.funds = funds
@@ -170,8 +252,7 @@ class Game:
 
         self.card_counter = card_counter
         self.cards_played = np.array([])
-        self.count_strategy_df = pd.read_csv('card_count_strategy.csv')
-        self.count_strategy_df = self.count_strategy_df.set_index('Card Counting Strategies')
+
         self.cs = np.array(['Hi-Lo', 'Hi-Opt I', 'Hi-Opt I', 'KO', 'Omega II', 'Red 7', 'Halves', 'Zen Count'])
 
     def _hit_(self, some_list: np.array):
@@ -224,22 +305,14 @@ class Game:
         if len(self.deck) < self.reshuffle_threshold:
             self.deck = gen_deck(deck_num=self.deck_num)
 
-        dealers_hand = np.array([])
-        players_hand = np.array([])
-
         # deals a hand of 2 cards to the player and dealer by popping the last unit of the shuffled list
-        for _ in range(0, 2):
-            self.deck, dealer_card = self.deck[:-1], self.deck[-1]
-            dealers_hand = np.append(dealers_hand, dealer_card)
-
-            self.deck, player_card = self.deck[:-1], self.deck[-1]
-            players_hand = np.append(players_hand, player_card)
+        self.deck, dealers_hand = self.deck[:-2], self.deck[-2:]
+        self.deck, players_hand = self.deck[:-2], self.deck[-2:]
 
         return dealers_hand, players_hand
 
     def _scaler_(self, rolling_cards: np.array):
-        rule_set = self.count_strategy_df.loc[self.card_counter]
-        return sum([rule_set.loc[card] for card in rolling_cards])
+        return sum([card_counting_profiles[self.card_counter][card] for card in rolling_cards])
 
     def blackjack(self, dealers_hand: np.array = None, players_hand: np.array = None):
         """
@@ -274,24 +347,20 @@ class Game:
                 # if you receive a natural 21 you receive a 3:2 payout and dealer loses
                 if p_sum == 21 and d_sum < 21:
                     self.funds += ((self.bet / 2) * 3)
-                elif p_sum == 21 and d_sum == 21:
-                    pass
 
                 # if you do not receive a natural 21 then you are asked to hit, stand, double or split
                 else:
-                    strategy_df = pd.read_csv('blackjack_basic_strategy.csv')
-                    strategy_df = strategy_df.set_index('Players Hand')
                     player_ref = ','.join(players_hand)
                     swap_player_ref = '{le},{rg}'.format(le=player_ref[2],
                                                          rg=player_ref[0])
                     hole_card = dealers_hand[0]
 
-                    if player_ref in strategy_df.index:
-                        action = strategy_df.loc[player_ref].loc[hole_card]
-                    elif swap_player_ref in strategy_df.index:
-                        action = strategy_df.loc[swap_player_ref].loc[hole_card]
+                    if player_ref in basic_strategy_profile['A'].keys():
+                        action = basic_strategy_profile[hole_card][player_ref]
+                    elif swap_player_ref in basic_strategy_profile['A'].keys():
+                        action = basic_strategy_profile[hole_card][swap_player_ref]
                     else:
-                        action = strategy_df.loc[str(p_sum)].loc[hole_card]
+                        action = basic_strategy_profile[hole_card][str(p_sum)]
 
                     final_dealer_hand = dealer_serve(draw_func=self._hit_,
                                                      dealers_hand=dealers_hand)
@@ -308,9 +377,9 @@ class Game:
                                                      bet=self.bet)
 
                     elif action == 'SP' and self.split:
-                        split_hand = self._split_(card_list=players_hand)
-                        for card in range(0, len(split_hand), 2):
-                            new_player_hand = split_hand[card:card + 2]
+                        players_hand = self._split_(card_list=players_hand)
+                        for card in range(0, len(players_hand), 2):
+                            new_player_hand = players_hand[card:card + 2]
                             self.blackjack(dealers_hand=final_dealer_hand, players_hand=new_player_hand)
 
                     elif action == 'D' and self.double:
@@ -319,11 +388,6 @@ class Game:
                         self.funds = self._sequence_(players_hand=players_hand,
                                                      dealer_hand=final_dealer_hand,
                                                      bet=bet_amt)
-
-                    else:
-                        self.funds = self._sequence_(players_hand=players_hand,
-                                                     dealer_hand=final_dealer_hand,
-                                                     bet=self.bet)
 
                     self.cards_played = np.append(self.cards_played, final_dealer_hand)
                     self.cards_played = np.append(self.cards_played, players_hand)
@@ -336,3 +400,9 @@ class Game:
                 self.bet -= self.bet * 0.1
 
         return self.funds
+
+
+if __name__ == '__main__':
+    g = Game(bet=100, funds=10000)
+    money = g.blackjack()
+    print(money)
