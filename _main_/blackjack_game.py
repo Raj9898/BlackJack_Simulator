@@ -275,9 +275,11 @@ class Game:
         :return: the updated value of playable funds
         """
 
+        # computes the sum of both dealer and player's hand
         new_p_sum = sum_hand(card_values=players_hand)
         new_d_sum = sum_hand(card_values=dealer_hand)
 
+        # identifies a winner for a given game sequence
         val = find_winner(player_sum=new_p_sum, dealer_sum=new_d_sum)
         funds = bet_check(value=val, funds=self.funds, bet=bet)
         return funds
@@ -290,6 +292,7 @@ class Game:
         """
 
         empty = np.array([])
+        # if two cards match split them individual and add another card to a large array
         if card_list[0] == card_list[1]:
             for card in card_list:
                 self.deck, new_card = self.deck[:-1], self.deck[-1]
@@ -302,17 +305,22 @@ class Game:
         :return: two lists, one representing the players 2 card draw and the other for the dealer
         """
 
-        if len(self.deck) < self.reshuffle_threshold:
+        # defines the threshold before the entire deck is reshuffled again
+        if len(self.deck) < (252 - self.reshuffle_threshold):
             self.deck = gen_deck(deck_num=self.deck_num)
 
         # deals a hand of 2 cards to the player and dealer by popping the last unit of the shuffled list
         self.deck, dealers_hand = self.deck[:-2], self.deck[-2:]
         self.deck, players_hand = self.deck[:-2], self.deck[-2:]
-
         return dealers_hand, players_hand
 
     def _scaler_(self, rolling_cards: np.array):
-        return sum([card_counting_profiles[self.card_counter][card] for card in rolling_cards])
+        card_counter = card_counting_profiles[self.card_counter]
+        rolling_count = sum([card_counter[card] for card in rolling_cards])
+
+        # defines the bet scaling rules based on the card count
+        count_dict = {(rolling_count > 10): self.bet * 1.1, (rolling_count > 10): self.bet * 0.9}
+        return count_dict[True], rolling_count
 
     def blackjack(self, dealers_hand: np.array = None, players_hand: np.array = None):
         """
@@ -355,6 +363,7 @@ class Game:
                                                          rg=player_ref[0])
                     hole_card = dealers_hand[0]
 
+                    # looks up the correct action from strategy table based on player hand and dealer's hole card
                     if player_ref in basic_strategy_profile['A'].keys():
                         action = basic_strategy_profile[hole_card][player_ref]
                     elif swap_player_ref in basic_strategy_profile['A'].keys():
@@ -362,6 +371,7 @@ class Game:
                     else:
                         action = basic_strategy_profile[hole_card][str(p_sum)]
 
+                    # computes the dealer soft-17 rule (see dealer serve function)
                     final_dealer_hand = dealer_serve(draw_func=self._hit_,
                                                      dealers_hand=dealers_hand)
 
@@ -392,12 +402,10 @@ class Game:
                     self.cards_played = np.append(self.cards_played, final_dealer_hand)
                     self.cards_played = np.append(self.cards_played, players_hand)
 
-        if self.card_counter in self.cs:
-            card_count = self._scaler_(self.cards_played)
-            if card_count > 10:
-                self.bet += self.bet * 0.1
-            elif card_count < -10:
-                self.bet -= self.bet * 0.1
+        """
+        Card Counting bet adjust
+        if self.card_counter in self.cs::
+        """
 
         return self.funds
 
