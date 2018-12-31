@@ -156,10 +156,11 @@ def dealer_serve(draw_func, dealers_hand: np.array):
 
     assert callable(draw_func) is True, 'Variable must be a function'
     dealer_sum = sum_hand(dealers_hand)
-    if dealer_sum < 17:
-        while dealer_sum < 17:
-            dealers_hand = draw_func(dealers_hand)
-            dealer_sum = sum_hand(dealers_hand)
+
+    # soft-17 rule forces dealer to draw until it reaches a sum of 17
+    while dealer_sum < 17:
+        dealers_hand = draw_func(dealers_hand)
+        dealer_sum = sum_hand(dealers_hand)
     return dealers_hand
 
 
