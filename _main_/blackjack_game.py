@@ -134,9 +134,11 @@ def sum_hand(hand: np.array):
     value_dict = {'A': [1, 11], '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
                   '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10}
 
+    # iterates through the hand and creates two value lists depending on value of Ace
     val_1 = [value_dict[i] if i != 'A' else value_dict[i][0] for i in hand]
     val_2 = [value_dict[i] if i != 'A' else value_dict[i][1] for i in hand]
 
+    # checks to see whether the max of the two sums exceed 21 to determine the correct hand value
     hand_val = {(max(sum(val_1), sum(val_2)) <= 21): max(sum(val_1), sum(val_2)),
                 (max(sum(val_1), sum(val_2)) > 21): min(sum(val_1), sum(val_2))}
 
@@ -169,6 +171,7 @@ def find_winner(player_sum: int, dealer_sum: int):
     :return: an integer from the set of [-1, 0, 1] indicating [loss, draw, win]
     """
 
+    # look-up table for the desired outcomes, depending on the values of both dealer/player hands
     win_dict = {(dealer_sum < player_sum <= 21): 1,
                 (player_sum < dealer_sum <= 21): -1,
                 (player_sum == dealer_sum): 0,
@@ -250,6 +253,7 @@ class Game:
 
         self.card_counter = card_counter
         self.cards_played = np.array([])
+        self.rolling_count = 0
 
         self.cs = np.array(['Hi-Lo', 'Hi-Opt I', 'Hi-Opt I', 'KO', 'Omega II', 'Red 7', 'Halves', 'Zen Count'])
 
@@ -290,6 +294,7 @@ class Game:
         """
 
         empty = np.array([])
+
         # if two cards match split them individual and add another card to a large array
         if card_list[0] == card_list[1]:
             for card in card_list:
@@ -313,12 +318,18 @@ class Game:
         return dealers_hand, players_hand
 
     def _scaler_(self, rolling_cards: np.array):
+        """
+        Used in tandem with a card counting strategy to scale the size of bets accordingly
+        :param rolling_cards: an array containing all previous cards played for the game
+        :return: the new betting amount alongside the rolling count
+        """
+
         card_counter = card_counting_profiles[self.card_counter]
-        rolling_count = sum([card_counter[card] for card in rolling_cards])
+        self.rolling_count += sum([card_counter[card] for card in rolling_cards])
 
         # defines the bet scaling rules based on the card count
-        count_dict = {(rolling_count > 10): self.bet * 1.1, (rolling_count > 10): self.bet * 0.9}
-        return count_dict[True], rolling_count
+        # count_dict = {(rolling_count > 10): self.bet * 1.1, (rolling_count > 10): self.bet * 0.9}
+        return self.rolling_count
 
     def blackjack(self, dealers_hand: np.array = None, players_hand: np.array = None):
         """
@@ -400,15 +411,7 @@ class Game:
                     self.cards_played = np.append(self.cards_played, final_dealer_hand)
                     self.cards_played = np.append(self.cards_played, players_hand)
 
-        """
-        Card Counting bet adjust
-        if self.card_counter in self.cs::
-        """
+        if self.card_counter in self.cs:
+            self.rolling_count = self._scaler_(rolling_cards=self.cards_played)
 
-        return self.funds
-
-
-if __name__ == '__main__':
-    g = Game(bet=100, funds=10000)
-    money = g.blackjack()
-    print(money)
+        return self.funds, self.rolling_count

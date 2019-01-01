@@ -13,7 +13,6 @@ All Rights Reserved
 ##################################################
 
 import blackjack_game as bjg
-import matplotlib.pyplot as plt
 import pandas as pd
 
 
@@ -63,6 +62,7 @@ if __name__ == "__main__":
 
     g = StrategySimulator(num_sim=sims, num_hand=hands)
     counts = g._simulation_(bet_size=bet, fund_size=funds)
+    print(counts)
 
     # for i in range(len(counts)):
     #     plt.plot(counts[i])
@@ -70,6 +70,6 @@ if __name__ == "__main__":
     # plt.title('{} simulations over {} hands: Bet size {} _ Funds Available {}'.format(sims, hands, bet, funds))
     # plt.show()
 
-    print(composite_stat(counts))
+    # print(composite_stat(counts))
 
     print(t1-time.process_time())
