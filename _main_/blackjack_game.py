@@ -325,7 +325,7 @@ class Game:
         """
 
         card_counter = card_counting_profiles[self.card_counter]
-        self.rolling_count += sum([card_counter[card] for card in rolling_cards])
+        self.rolling_count = sum([card_counter[card] for card in rolling_cards])
 
         # defines the bet scaling rules based on the card count
         # count_dict = {(rolling_count > 10): self.bet * 1.1, (rolling_count > 10): self.bet * 0.9}
@@ -411,7 +411,7 @@ class Game:
                     self.cards_played = np.append(self.cards_played, final_dealer_hand)
                     self.cards_played = np.append(self.cards_played, players_hand)
 
-        if self.card_counter in self.cs:
+        if self.card_counter:
             self.rolling_count = self._scaler_(rolling_cards=self.cards_played)
 
         return self.funds, self.rolling_count

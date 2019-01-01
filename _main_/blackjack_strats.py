@@ -14,6 +14,7 @@ All Rights Reserved
 
 import blackjack_game as bjg
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 class StrategySimulator:
@@ -28,7 +29,7 @@ class StrategySimulator:
 
         for _ in range(self.num_sims):
             obj = bjg.Game(bet=bet_size, funds=fund_size, deck_num=deck_num, card_counter=card_counter)
-            ret = [obj.blackjack() for _ in range(self.num_hands)]
+            ret = [obj.blackjack()[1] for _ in range(self.num_hands)]
             self.game_count.append(bjg.np.array(ret))
 
         return self.game_count
@@ -61,14 +62,12 @@ if __name__ == "__main__":
     funds = 10000
 
     g = StrategySimulator(num_sim=sims, num_hand=hands)
-    counts = g._simulation_(bet_size=bet, fund_size=funds)
-    print(counts)
+    counts = g._simulation_(bet_size=bet, fund_size=funds, card_counter='Omega II')
 
-    # for i in range(len(counts)):
-    #     plt.plot(counts[i])
-    #
-    # plt.title('{} simulations over {} hands: Bet size {} _ Funds Available {}'.format(sims, hands, bet, funds))
-    # plt.show()
+    for i in range(len(counts)):
+        plt.plot(counts[i])
+    # plt.title('{} simulations over {} hands: Bet size {} | Funds Available {}'.format(sims, hands, bet, funds))
+    plt.show()
 
     # print(composite_stat(counts))
 
