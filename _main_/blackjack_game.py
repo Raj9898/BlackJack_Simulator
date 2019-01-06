@@ -223,14 +223,15 @@ def insurance_func(dealer_list: np.array, funds: int, insurance_bet: int):
 
 class Game:
 
-    def __init__(self, bet: int, funds: int, side_bet: int = 0, deck_num: int = 4, split: bool = True,
-                 insurance: bool = False, double: bool = True, card_counter: str = None):
+    def __init__(self, bet: int, funds: int, side_bet: int = 0, deck_num: int = 4, deck_pen: float = .2,
+                 split: bool = True, insurance: bool = False, double: bool = True, card_counter: str = None):
         """
         Initializes the game with predefined arguments regarding game structure
         :param bet: determines the size of initial and subsequent bets (type integer)
         :param funds: determines starting funds for the game (type integer)
         :param side_bet: determines the size of side_bet in the event of insurance (type integer)
-        :param deck_num: determines the number of playable decks for the game
+        :param deck_num: determines the number of playable decks for the game (type int)
+        :param deck_pen: determines the amount of penetration of the deck before reshuffle (type float)
         :param split: indicates the player's preference to split if available (type bool)
         :param insurance: indicates the player's preference to take out insurance if available (type bool)
         :param double: indicates the player's preference to double if available (type bool)
@@ -239,12 +240,16 @@ class Game:
 
         assert bet < funds, "The value of your bet exceeds your total funds"
         assert bet > 10, 'Bet value too low, minimum threshold is 10'
+        assert 0.0 < deck_pen < 1.0, 'Deck penetration must be a float between 0.0 and 1.0'
 
         self.deck_num = deck_num
         self.deck = gen_deck(deck_num=self.deck_num)
-        self.reshuffle_threshold = 60
+        self.reshuffle_threshold = deck_pen
 
         self.bet = bet
+        self.base_bet = bet
+        self.bet_inc = 0.1
+
         self.funds = funds
         self.split = split
         self.insurance = insurance
@@ -254,8 +259,6 @@ class Game:
         self.card_counter = card_counter
         self.cards_played = np.array([])
         self.rolling_count = 0
-
-        self.cs = np.array(['Hi-Lo', 'Hi-Opt I', 'Hi-Opt I', 'KO', 'Omega II', 'Red 7', 'Halves', 'Zen Count'])
 
     def _hit_(self, some_list: np.array):
         """
@@ -309,8 +312,9 @@ class Game:
         """
 
         # defines the threshold before the entire deck is reshuffled again
-        if len(self.deck) < (252 - self.reshuffle_threshold):
+        if len(self.deck) < (252 - (len(self.deck)*self.reshuffle_threshold)):
             self.deck = gen_deck(deck_num=self.deck_num)
+            self.cards_played = np.array([])
 
         # deals a hand of 2 cards to the player and dealer by popping the last unit of the shuffled list
         self.deck, dealers_hand = self.deck[:-2], self.deck[-2:]
@@ -320,6 +324,7 @@ class Game:
     def _scaler_(self, rolling_cards: np.array):
         """
         Used in tandem with a card counting strategy to scale the size of bets accordingly
+        **NOTE** card counting strategies restart after the deck has been reshuffled
         :param rolling_cards: an array containing all previous cards played for the game
         :return: the new betting amount alongside the rolling count
         """
@@ -328,8 +333,16 @@ class Game:
         self.rolling_count = sum([card_counter[card] for card in rolling_cards])
 
         # defines the bet scaling rules based on the card count
-        # count_dict = {(rolling_count > 10): self.bet * 1.1, (rolling_count > 10): self.bet * 0.9}
-        return self.rolling_count
+        best_scaler_profile = {(20 >= self.rolling_count > 10): self.base_bet * (1+self.bet_inc),
+                               (-20 <= self.rolling_count < -10): self.base_bet * (1-(2*self.bet_inc)),
+                               (30 >= self.rolling_count > 20): self.base_bet * (1+(2*self.bet_inc)),
+                               (-30 <= self.rolling_count < -20): self.base_bet * (1-(4*self.bet_inc)),
+                               (self.rolling_count > 30): self.base_bet * (1+(3*self.bet_inc)),
+                               (self.rolling_count < -30): self.base_bet * (1-(6*self.bet_inc)),
+                               (-10 <= self.rolling_count <= 10): self.base_bet}
+
+        self.bet = best_scaler_profile[True]
+        return self.rolling_count, self.bet
 
     def blackjack(self, dealers_hand: np.array = None, players_hand: np.array = None):
         """
@@ -412,6 +425,6 @@ class Game:
                     self.cards_played = np.append(self.cards_played, players_hand)
 
         if self.card_counter:
-            self.rolling_count = self._scaler_(rolling_cards=self.cards_played)
+            self.rolling_count, self.bet = self._scaler_(rolling_cards=self.cards_played)
 
         return self.funds, self.rolling_count
