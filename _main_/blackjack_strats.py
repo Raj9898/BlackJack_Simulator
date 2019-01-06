@@ -60,7 +60,7 @@ class Bayesian:
 if __name__ == "__main__":
     import time
     t1 = time.process_time()
-    sims = 1
+    sims = 1000
     hands = 150
     bet = 100
     funds = 10000
@@ -68,16 +68,18 @@ if __name__ == "__main__":
     g = StrategySimulator(num_sim=sims, num_hand=hands)
     counts = g._simulation_(bet_size=bet, fund_size=funds, card_counter='Omega II', val_count='val')
 
-    # for i in range(len(counts)):
-    #     plt.plot(counts[i])
-    #
-    # avg_mean, avg_gain, std, win_pct, loss_pct = composite_stat(counts)
-    # plt.figtext(0.15, 0.85, r'$\mu$: {}  $\sigma$: {}'
-    #                         r' Wins: {} Losses:{}'.format(round(avg_mean, 2),
-    #                                                       round(std, 4),
-    #                                                       win_pct,
-    #                                                       loss_pct)
-    #             )
-    # plt.show()
+    for i in range(len(counts)):
+        plt.plot(counts[i])
+
+    avg_mean, avg_g, std_v, win_, loss_pct = composite_stat(counts)
+    score = ((avg_mean-funds)/std_v) * win_
+    plt.title('{} Valued Option'.format(score))
+    plt.figtext(0.15, 0.85, r'$\mu$: {}  $\sigma$: {}'
+                            r' Wins: {} Losses:{}'.format(round(avg_mean, 2),
+                                                          round(std_v, 4),
+                                                          win_,
+                                                          loss_pct)
+                )
+    plt.show()
 
     print('Time Process running', t1-time.process_time())

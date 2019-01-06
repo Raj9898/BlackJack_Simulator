@@ -333,12 +333,12 @@ class Game:
         self.rolling_count = sum([card_counter[card] for card in rolling_cards])
 
         # defines the bet scaling rules based on the card count
-        best_scaler_profile = {(5 >= self.rolling_count > 2): self.base_bet * (1+self.bet_inc),
-                               (-5 <= self.rolling_count < -2): self.base_bet * (1-(2*self.bet_inc)),
-                               (10 >= self.rolling_count > 5): self.base_bet * (1+(2*self.bet_inc)),
-                               (-10 <= self.rolling_count < -5): self.base_bet * (1-(4*self.bet_inc)),
-                               (self.rolling_count > 10): self.base_bet * (1+(3*self.bet_inc)),
-                               (self.rolling_count < -10): self.base_bet * (1-(6*self.bet_inc)),
+        best_scaler_profile = {(5 >= self.rolling_count > 2): self.base_bet * (1+(1*self.bet_inc)),
+                               (-5 <= self.rolling_count < -2): self.base_bet * (1-(1*self.bet_inc)),
+                               (10 >= self.rolling_count > 5): self.base_bet * (1+(4*self.bet_inc)),
+                               (-10 <= self.rolling_count < -5): self.base_bet * (1-(2*self.bet_inc)),
+                               (self.rolling_count > 10): self.base_bet * (1+(6*self.bet_inc)),
+                               (self.rolling_count < -10): self.base_bet * (1-(3*self.bet_inc)),
                                (-2 <= self.rolling_count <= 2): self.base_bet}
 
         self.bet = best_scaler_profile[True]
