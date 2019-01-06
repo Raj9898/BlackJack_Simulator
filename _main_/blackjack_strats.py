@@ -28,7 +28,7 @@ class StrategySimulator:
     def _simulation_(self, bet_size: int, fund_size: int, deck_num: int = 4,
                      card_counter: str = None, val_count: str= 'val'):
 
-        choice_dict = {'val': 0, 'cnt': 1}
+        choice_dict = {'val': 0, 'cnt': 1, 'bet': 2}
 
         for _ in range(self.num_sims):
             obj = bjg.Game(bet=bet_size, funds=fund_size, deck_num=deck_num, card_counter=card_counter)
@@ -60,7 +60,7 @@ class Bayesian:
 if __name__ == "__main__":
     import time
     t1 = time.process_time()
-    sims = 10000
+    sims = 1
     hands = 150
     bet = 100
     funds = 10000
@@ -68,16 +68,16 @@ if __name__ == "__main__":
     g = StrategySimulator(num_sim=sims, num_hand=hands)
     counts = g._simulation_(bet_size=bet, fund_size=funds, card_counter='Omega II', val_count='val')
 
-    for i in range(len(counts)):
-        plt.plot(counts[i])
-
-    avg_mean, avg_gain, std, win_pct, loss_pct = composite_stat(counts)
-    plt.figtext(0.15, 0.85, r'$\mu$: {}  $\sigma$: {}'
-                            r' Wins: {} Losses:{}'.format(round(avg_mean, 2),
-                                                          round(std, 4),
-                                                          win_pct,
-                                                          loss_pct)
-                )
-    plt.show()
+    # for i in range(len(counts)):
+    #     plt.plot(counts[i])
+    #
+    # avg_mean, avg_gain, std, win_pct, loss_pct = composite_stat(counts)
+    # plt.figtext(0.15, 0.85, r'$\mu$: {}  $\sigma$: {}'
+    #                         r' Wins: {} Losses:{}'.format(round(avg_mean, 2),
+    #                                                       round(std, 4),
+    #                                                       win_pct,
+    #                                                       loss_pct)
+    #             )
+    # plt.show()
 
     print('Time Process running', t1-time.process_time())
