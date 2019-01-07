@@ -329,6 +329,7 @@ class Game:
         :return: the new betting amount alongside the rolling count
         """
 
+        # calculates rolling count value based on given count strategy
         card_counter = card_counting_profiles[self.card_counter]
         self.rolling_count = sum([card_counter[card] for card in rolling_cards])
 
@@ -350,6 +351,7 @@ class Game:
         :return: available funds after successful completion of hand
         """
 
+        # deals cards to both dealer and player if no initial test is provided
         if dealers_hand is None or players_hand is None:
             dealers_hand, players_hand = self._starting_serve_()
 
@@ -397,23 +399,27 @@ class Game:
                     final_dealer_hand = dealer_serve(draw_func=self._hit_,
                                                      dealers_hand=dealers_hand)
 
+                    # continues a single hit action
                     if action == 'H':
                         players_hand = self._hit_(players_hand)
                         self.funds = self._sequence_(players_hand=players_hand,
                                                      dealer_hand=final_dealer_hand,
                                                      bet=self.bet)
 
+                    # progresses forward by simply standing on the draw
                     elif action == 'S':
                         self.funds = self._sequence_(players_hand=players_hand,
                                                      dealer_hand=final_dealer_hand,
                                                      bet=self.bet)
 
+                    # split the provided hand and recursively plays each action
                     elif action == 'SP' and self.split:
                         players_hand = self._split_(card_list=players_hand)
                         for card in range(0, len(players_hand), 2):
                             new_player_hand = players_hand[card:card + 2]
                             self.blackjack(dealers_hand=final_dealer_hand, players_hand=new_player_hand)
 
+                    # doubles the bet and engages in a single hit
                     elif action == 'D' and self.double:
                         bet_amt = double_func(bet=self.bet, funds=self.funds)
                         players_hand = self._hit_(players_hand)
@@ -424,6 +430,7 @@ class Game:
                     self.cards_played = np.append(self.cards_played, final_dealer_hand)
                     self.cards_played = np.append(self.cards_played, players_hand)
 
+        # if a card counting strategy is provided, bets are altered accordingly
         if self.card_counter:
             self.rolling_count, self.bet = self._scaler_(rolling_cards=self.cards_played)
 
