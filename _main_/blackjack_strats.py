@@ -66,8 +66,7 @@ class Bayesian:
 
 if __name__ == "__main__":
 
-    df = pd.read_csv('card_counting_strategy.csv').set_index('Card Counting Strategies').drop(['B', 'C'],
-                                                                                              axis=1).transpose().to_dict()
+    print(1)
     # sims = 1000
     # hands = 150
     # bet = 100
