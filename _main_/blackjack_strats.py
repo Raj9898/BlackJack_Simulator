@@ -14,6 +14,7 @@ All Rights Reserved
 
 import blackjack_game as bjg
 import pandas as pd
+import pymc3 as pm
 import matplotlib.pyplot as plt
 
 
@@ -56,30 +57,30 @@ class Bayesian:
         self.mean = mean
         self.std = std
 
+    def model(self):
+
+        with pm.Model() as model:
+            # Model definition
+            pass
+
 
 if __name__ == "__main__":
-    import time
-    t1 = time.process_time()
-    sims = 1000
-    hands = 150
-    bet = 100
-    funds = 10000
 
-    g = StrategySimulator(num_sim=sims, num_hand=hands)
-    counts = g._simulation_(bet_size=bet, fund_size=funds, card_counter='Omega II', val_count='val')
+    df = pd.read_csv('card_counting_strategy.csv').set_index('Card Counting Strategies').drop(['B', 'C'],
+                                                                                              axis=1).transpose().to_dict()
+    # sims = 1000
+    # hands = 150
+    # bet = 100
+    # funds = 10000
+    #
+    # g = StrategySimulator(num_sim=sims, num_hand=hands)
+    # counts = g._simulation_(bet_size=bet, fund_size=funds, deck_nun = 8, val_count='val')
+    # for i in range(len(counts)):
+    #     plt.plot(counts[i])
+    #
+    # avg_mean, avg_g, std_v, win_, loss_pct = composite_stats(counts)
+    # plt.figtext(0.15, 0.85, r'$\mu$: {}  $\sigma$: {}'
+    #                         r' Wins: {} Losses:{}'.format(round(avg_mean, 2), round(std_v, 4), win_, loss_pct)
+    #             )
+    # plt.show()
 
-    for i in range(len(counts)):
-        plt.plot(counts[i])
-
-    avg_mean, avg_g, std_v, win_, loss_pct = composite_stats(counts)
-    score = ((avg_mean-funds)/std_v) * win_
-    plt.title('{} Valued Option'.format(score))
-    plt.figtext(0.15, 0.85, r'$\mu$: {}  $\sigma$: {}'
-                            r' Wins: {} Losses:{}'.format(round(avg_mean, 2),
-                                                          round(std_v, 4),
-                                                          win_,
-                                                          loss_pct)
-                )
-    plt.show()
-
-    print('Time Process running', t1-time.process_time())
