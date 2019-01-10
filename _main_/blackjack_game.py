@@ -257,7 +257,8 @@ def insurance_func(dealer_list: np.array, funds: int, insurance_bet: int):
 class Game:
 
     def __init__(self, bet: int, funds: int, side_bet: int = 0, deck_num: int = 4, deck_pen: float = .2,
-                 split: bool = True, insurance: bool = False, double: bool = True, card_counter: str = None):
+                 split: bool = True, insurance: bool = False, double: bool = True, card_counter: str = None,
+                 counting_splits: list = (1, 1, 1, 1, 1, 1), bet_inc: float = 0.1):
         """
         Initializes the game with predefined arguments regarding game structure
         :param bet: determines the size of initial and subsequent bets (type integer)
@@ -281,7 +282,8 @@ class Game:
 
         self.bet = bet
         self.base_bet = bet
-        self.bet_inc = 0.1
+        self.bet_inc = bet_inc
+        self.counting_split = counting_splits
 
         self.funds = funds
         self.split = split
@@ -365,14 +367,15 @@ class Game:
         # calculates rolling count value based on given count strategy
         card_counter = card_counting_profiles[self.card_counter]
         self.rolling_count = sum([card_counter[card] for card in rolling_cards])
+        s = self.counting_split
 
         # defines the bet scaling rules based on the card count
-        best_scaler_profile = {(5 >= self.rolling_count > 2): self.base_bet * (1+(1*self.bet_inc)),
-                               (-5 <= self.rolling_count < -2): self.base_bet * (1-(1*self.bet_inc)),
-                               (10 >= self.rolling_count > 5): self.base_bet * (1+(4*self.bet_inc)),
-                               (-10 <= self.rolling_count < -5): self.base_bet * (1-(2*self.bet_inc)),
-                               (self.rolling_count > 10): self.base_bet * (1+(6*self.bet_inc)),
-                               (self.rolling_count < -10): self.base_bet * (1-(3*self.bet_inc)),
+        best_scaler_profile = {(5 >= self.rolling_count > 2): self.base_bet * (1+(s[0]*self.bet_inc)),
+                               (-5 <= self.rolling_count < -2): self.base_bet * (1-(s[1]*self.bet_inc)),
+                               (10 >= self.rolling_count > 5): self.base_bet * (1+(s[2]*self.bet_inc)),
+                               (-10 <= self.rolling_count < -5): self.base_bet * (1-(s[3]*self.bet_inc)),
+                               (self.rolling_count > 10): self.base_bet * (1+(s[4]*self.bet_inc)),
+                               (self.rolling_count < -10): self.base_bet * (1-(s[5]*self.bet_inc)),
                                (-2 <= self.rolling_count <= 2): self.base_bet}
 
         self.bet = best_scaler_profile[True]

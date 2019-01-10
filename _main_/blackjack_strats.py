@@ -48,7 +48,7 @@ def composite_stats(composite_arr: bjg.np.array):
 
     df = pd.DataFrame(avg_arr).pct_change()
     win_pct = round(len(df[df > 0].dropna()) / len(df), 2)
-    return avg_val, avg_gain, std, win_pct, round(1-win_pct, 2)
+    return avg_arr, avg_val, avg_gain, std, win_pct, round(1-win_pct, 2)
 
 
 class Bayesian:
@@ -57,29 +57,60 @@ class Bayesian:
         self.mean = mean
         self.std = std
 
-    def model(self):
-
-        with pm.Model() as model:
-            # Model definition
-            pass
+    # def model(self):
+    #
+    #     with pm.Model() as model:
+    #         # Model definition
+    #         pass
 
 
 if __name__ == "__main__":
+        import seaborn as sns
+        sims = 1
+        hands = 150
+        decks = 8
+        bet = 100
+        funds = 10000
+        card_cs = 'Revere RAPC'
 
-    print(1)
-    # sims = 1000
-    # hands = 150
-    # bet = 100
-    # funds = 10000
-    #
-    # g = StrategySimulator(num_sim=sims, num_hand=hands)
-    # counts = g._simulation_(bet_size=bet, fund_size=funds, deck_nun = 8, val_count='val')
-    # for i in range(len(counts)):
-    #     plt.plot(counts[i])
-    #
-    # avg_mean, avg_g, std_v, win_, loss_pct = composite_stats(counts)
-    # plt.figtext(0.15, 0.85, r'$\mu$: {}  $\sigma$: {}'
-    #                         r' Wins: {} Losses:{}'.format(round(avg_mean, 2), round(std_v, 4), win_, loss_pct)
-    #             )
-    # plt.show()
+        g = StrategySimulator(num_sim=sims, num_hand=hands)
+        money = g._simulation_(bet_size=bet, fund_size=funds, deck_num=decks, val_count='val', card_counter=card_cs)
+        counts = g._simulation_(bet_size=bet, fund_size=funds, deck_num=decks, val_count='cnt', card_counter=card_cs)
+
+        big_df = pd.DataFrame({'pnl': money[0],
+                               'count': money[1]})
+        big_df['pct'] = big_df['pnl'].pct_change()
+        big_df['pct'] = big_df['pct'].shift(-1)
+
+        for elm in big_df['count'].unique().tolist():
+            print(elm)
+            print(len(big_df[big_df['count'] == elm]))
+
+        """
+        kelly criterion
+        f = (bp-q)b
+        """
+
+        # print(big_df[big_df['count'] == 10])
+
+        # group_df = big_df.groupby(by='count')['pct'].mean()
+        # print(group_df.sort_values())
+
+        # fig, axes = plt.subplots(2, 1, sharex='col')
+        #
+        # corr_list = []
+        # for i in range(len(money)//2):
+        #     corr = bjg.np.corrcoef(money[i], money[i+len(money)//2])[0, 1]
+        #     corr_list.append(corr)
+        # print(sorted(corr_list)[-1])
+        #
+        # axes[0].set_title('Simulated PnL' )
+        # for i in range(len(money)//2):
+        #     axes[0].plot(money[i])
+        #
+        # axes[1].set_title('Rolling Count by {}'.format(card_cs))
+        # for x in range(len(money)//2, len(money)):
+        #     axes[1].plot(money[x])
+        #
+        # plt.show()
 
