@@ -56,7 +56,7 @@ if __name__ == "__main__":
     decks = 8
     bet = 100
     funds = 10000
-    card_cs = 'Omega II'
+    card_cs = 'Reverse RAPC'
 
     g = StrategySimulator(num_sim=sims, num_hand=hands)
     money_1 = g._simulation_(bet_size=bet, fund_size=funds, deck_num=decks, val_count='val', card_counter=card_cs)
@@ -69,13 +69,10 @@ if __name__ == "__main__":
 
     for x in money_2:
         axes[0].plot(x)
-        axes[0].set_title('Regular Basic Strategy -- {} -- {}'.format(composite_stats(money_2)[1],
-                                                                      composite_stats(money_2)[3]))
+        axes[0].set_title('Regular Basic Strategy -- {}'.format(composite_stats(money_2)[1]))
 
     for i in money_1:
         axes[1].plot(i)
-        axes[1].set_title('{} wt Kelly -- {} -- {}'.format(card_cs,
-                                                           composite_stats(money_1)[1],
-                                                           composite_stats(money_1)[3]))
+        axes[1].set_title('{} wt Kelly -- {}'.format(card_cs, composite_stats(money_1)[1],))
 
     plt.show()
