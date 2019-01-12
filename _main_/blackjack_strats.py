@@ -55,7 +55,7 @@ if __name__ == "__main__":
     decks = 8
     bet = 100
     funds = 10000
-    card_cs = 'Revere RAPC'
+    card_cs = 'Reverse RAPC'
 
     g = StrategySimulator(num_sim=sims, num_hand=hands)
     money = g._simulation_(bet_size=bet, fund_size=funds, deck_num=decks, val_count='val', card_counter=card_cs)
