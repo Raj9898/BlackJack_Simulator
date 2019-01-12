@@ -40,12 +40,13 @@ class StrategySimulator:
 
 def composite_stats(composite_arr: bjg.np.array):
     avg_arr = bjg.np.mean(composite_arr, axis=0)
-    avg_val = bjg.np.mean(avg_arr)
-    std = bjg.np.std(avg_arr)
+    avg_val = round(bjg.np.mean(avg_arr), 2)
+    std = round(bjg.np.std(avg_arr), 4)
     avg_gain = round((avg_arr[-1] - avg_arr[0])/avg_arr[0], 4)
 
     df = pd.DataFrame(avg_arr).pct_change()
     win_pct = round(len(df[df > 0].dropna()) / len(df), 2)
+
     return avg_arr, avg_val, avg_gain, std, win_pct, round(1-win_pct, 2)
 
 
@@ -55,12 +56,26 @@ if __name__ == "__main__":
     decks = 8
     bet = 100
     funds = 10000
-    card_cs = 'Reverse RAPC'
+    card_cs = 'Omega II'
 
     g = StrategySimulator(num_sim=sims, num_hand=hands)
-    money = g._simulation_(bet_size=bet, fund_size=funds, deck_num=decks, val_count='val', card_counter=card_cs)
+    money_1 = g._simulation_(bet_size=bet, fund_size=funds, deck_num=decks, val_count='val', card_counter=card_cs)
+
+    h = StrategySimulator(num_sim=sims, num_hand=hands)
+    money_2 = h._simulation_(bet_size=bet, fund_size=funds, deck_num=decks, val_count='val')
 
     import matplotlib.pyplot as plt
-    for x in money:
-        plt.plot(x)
+    fig, axes = plt.subplots(2, 1, sharex='col')
+
+    for x in money_2:
+        axes[0].plot(x)
+        axes[0].set_title('Regular Basic Strategy -- {} -- {}'.format(composite_stats(money_2)[1],
+                                                                      composite_stats(money_2)[3]))
+
+    for i in money_1:
+        axes[1].plot(i)
+        axes[1].set_title('{} wt Kelly -- {} -- {}'.format(card_cs,
+                                                           composite_stats(money_1)[1],
+                                                           composite_stats(money_1)[3]))
+
     plt.show()
