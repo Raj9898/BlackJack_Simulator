@@ -12,6 +12,7 @@ All Rights Reserved
 # Import Libraries and modules
 ##################################################
 import numpy as np
+from scipy.stats import norm
 
 # created through function call pd.read_csv('blackjack_basic_strategy.csv').set_index('Players Hand').to_dict()
 basic_strategy_profile = {'2': {'21': 'S', '20': 'S', '19': 'S', '18': 'S', '17': 'S', '16': 'S', '15': 'S',
@@ -257,8 +258,7 @@ def insurance_func(dealer_list: np.array, funds: int, insurance_bet: int):
 class Game:
 
     def __init__(self, bet: int, funds: int, side_bet: int = 0, deck_num: int = 4, deck_pen: float = .2,
-                 split: bool = True, insurance: bool = False, double: bool = True, card_counter: str = None,
-                 counting_splits: list = (1, 1, 1, 1, 1, 1), bet_inc: float = 0.1):
+                 split: bool = True, insurance: bool = False, double: bool = True, card_counter: str = None):
         """
         Initializes the game with predefined arguments regarding game structure
         :param bet: determines the size of initial and subsequent bets (type integer)
@@ -282,8 +282,6 @@ class Game:
 
         self.bet = bet
         self.base_bet = bet
-        self.bet_inc = bet_inc
-        self.counting_split = counting_splits
 
         self.funds = funds
         self.split = split
@@ -347,7 +345,7 @@ class Game:
         """
 
         # defines the threshold before the entire deck is reshuffled again
-        if len(self.deck) < (252 - (len(self.deck)*self.reshuffle_threshold)):
+        if len(self.deck) < ((52*self.deck_num) - (52*self.deck_num*self.reshuffle_threshold)):
             self.deck = gen_deck(deck_num=self.deck_num)
             self.cards_played = np.array([])
 
@@ -367,18 +365,20 @@ class Game:
         # calculates rolling count value based on given count strategy
         card_counter = card_counting_profiles[self.card_counter]
         self.rolling_count = sum([card_counter[card] for card in rolling_cards])
-        s = self.counting_split
 
-        # defines the bet scaling rules based on the card count
-        best_scaler_profile = {(5 >= self.rolling_count > 2): self.base_bet * (1+(s[0]*self.bet_inc)),
-                               (-5 <= self.rolling_count < -2): self.base_bet * (1-(s[1]*self.bet_inc)),
-                               (10 >= self.rolling_count > 5): self.base_bet * (1+(s[2]*self.bet_inc)),
-                               (-10 <= self.rolling_count < -5): self.base_bet * (1-(s[3]*self.bet_inc)),
-                               (self.rolling_count > 10): self.base_bet * (1+(s[4]*self.bet_inc)),
-                               (self.rolling_count < -10): self.base_bet * (1-(s[5]*self.bet_inc)),
-                               (-2 <= self.rolling_count <= 2): self.base_bet}
+        """
+        kelly criterion, is a formula for bet sizing that leads almost surely to higher wealth compared to 
+        any other strategy in the long run (i.e. the limit as the number of bets goes to infinity)
+        f = (bp-q)b, where
+            f is the fraction of the current bankroll to wager, i.e. how much to bet;
+            b is the net odds received on the wager ("b to 1")
+            p is the probability of winning;
+            q is the probability of losing, which is 1 − p.
+        """
 
-        self.bet = best_scaler_profile[True]
+        p = norm(0, 5).pdf(self.rolling_count)
+        q = 1-p
+        self.bet = self.funds * (p - q)
         return self.rolling_count, self.bet
 
     def blackjack(self, dealers_hand: np.array = None, players_hand: np.array = None):
