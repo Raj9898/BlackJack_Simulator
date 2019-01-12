@@ -60,4 +60,7 @@ if __name__ == "__main__":
     g = StrategySimulator(num_sim=sims, num_hand=hands)
     money = g._simulation_(bet_size=bet, fund_size=funds, deck_num=decks, val_count='val', card_counter=card_cs)
 
-    print(money)
+    import matplotlib.pyplot as plt
+    for x in money:
+        plt.plot(x)
+    plt.show()

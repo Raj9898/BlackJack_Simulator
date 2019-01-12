@@ -376,9 +376,8 @@ class Game:
             q is the probability of losing, which is 1 − p.
         """
 
-        p = norm(0, 5).pdf(self.rolling_count)
-        q = 1-p
-        self.bet = self.funds * (p - q)
+        p = norm(0, 5).cdf(self.rolling_count)
+        self.bet = self.base_bet * (1+(p - (1-p)))
         return self.rolling_count, self.bet
 
     def blackjack(self, dealers_hand: np.array = None, players_hand: np.array = None):
