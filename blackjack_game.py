@@ -383,6 +383,8 @@ class Game:
     def blackjack(self, dealers_hand: np.array = None, players_hand: np.array = None):
         """
         simulates a game of blackjack as per specification imputed by user
+        :param dealers_hand: a numpy array of cards for the dealer
+        :param players_hand: a numpy array of cards for the player
         :return: available funds after successful completion of hand
         """
 
@@ -469,4 +471,9 @@ class Game:
         if self.card_counter:
             self.rolling_count, self.bet = self._scaler_(rolling_cards=self.cards_played)
 
-        return self.funds, self.rolling_count, self.bet
+        return self.funds, self.rolling_count, self.bet, dealers_hand, players_hand
+
+
+if __name__ == '__main__':
+    G = Game(bet=100, funds=10000, deck_num=1)
+    print(G.blackjack())
