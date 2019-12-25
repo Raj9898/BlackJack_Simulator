@@ -387,6 +387,7 @@ class Game:
         :param players_hand: a numpy array of cards for the player
         :return: available funds after successful completion of hand
         """
+        global final_dealer_hand
 
         # deals cards to both dealer and player if no initial test is provided
         if dealers_hand is None or players_hand is None:
@@ -471,9 +472,4 @@ class Game:
         if self.card_counter:
             self.rolling_count, self.bet = self._scaler_(rolling_cards=self.cards_played)
 
-        return self.funds, self.rolling_count, self.bet, dealers_hand, players_hand
-
-
-if __name__ == '__main__':
-    G = Game(bet=100, funds=10000, deck_num=1)
-    print(G.blackjack())
+        return self.funds, self.rolling_count, self.bet, final_dealer_hand, players_hand
